@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.ecommerce.exceptions.configExceptionHandler;
 
 import br.com.dbc.vemser.ecommerce.exceptions.BancoDeDadosException;
+import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,37 +41,51 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(body, headers, status);
     }
 
-    @ExceptionHandler(BancoDeDadosException.class)
-    public ResponseEntity<Object> handleException(BancoDeDadosException exception,
-                                                  HttpServletRequest request) {
+    private <T extends Exception> Map<String, Object> createBody(T exception) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("message", exception.getMessage());
+        return body;
+    }
+
+    @ExceptionHandler(BancoDeDadosException.class)
+    public ResponseEntity<Object> handleException(BancoDeDadosException exception,
+                                                  HttpServletRequest request) {
+        Map<String, Object> body = createBody(exception);
+
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleException(ConstraintViolationException exception,
                                                   HttpServletRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("message", exception.getMessage());
+        Map<String, Object> body = createBody(exception);
+
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RegraDeNegocioException.class)
     public ResponseEntity<Object> handleException(RegraDeNegocioException exception,
                                                   HttpServletRequest request) {
+            Map<String, Object> body = createBody(exception);
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", new Date());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("message", exception.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
 
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UniqueFieldExistsException.class)
+    public ResponseEntity<Object> handleException(UniqueFieldExistsException exception,
+                                                  HttpServletRequest request) {
+        Map<String, String> errors = exception.getCamposViolados();
+
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("message", "Campos inválidos encontrados");
+        response.put("errors", exception.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
 }

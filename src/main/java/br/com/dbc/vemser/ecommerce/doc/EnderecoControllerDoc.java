@@ -3,7 +3,6 @@ package br.com.dbc.vemser.ecommerce.doc;
 
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -67,7 +66,7 @@ public interface EnderecoControllerDoc {
     @PostMapping("/{idCliente}")
     ResponseEntity<EnderecoDTO> create(@Positive(message = "id deve ser maior que zero")
                                        @PathVariable("idPessoa") Integer idCliente,
-                                       @Valid @RequestBody EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException;
+                                       @Valid @RequestBody EnderecoCreateDTO enderecoCreateDTO) throws Exception;
 
     @Operation(summary = "Atualizar endereço por ID", description = "Atualiza o endereço selecionado pelo ID")
     @ApiResponses(

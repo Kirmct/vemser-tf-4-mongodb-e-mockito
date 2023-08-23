@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @AllArgsConstructor
@@ -36,10 +37,11 @@ public class PedidoService {
             throw new RegraDeNegocioException("Pedido finalizado!");
     }
 
-    public PedidoDTO criarPedido(Integer idCliente, PedidoCreateDTO idProduto) throws Exception {
+    public PedidoDTO criarPedido(Integer idCliente, PedidoCreateDTO idProduto) throws RegraDeNegocioException {
 
         ClienteEntity cliente = clienteService.findById(idCliente);
-        ProdutoEntity produtoEntityBuscado = produtoRepository.findByIdProduto(idProduto.getIdProduto());
+        ProdutoEntity produtoEntityBuscado = produtoRepository.findById(idProduto.getIdProduto())
+                .orElseThrow(() -> new RegraDeNegocioException("Produto não encontrado!"));
 
         PedidoEntity pedido = new PedidoEntity();
         pedido.setStatusPedido("N");
@@ -94,13 +96,13 @@ public class PedidoService {
 
     public Void adicionarProdutoAoPedido(Integer idPedido, Integer idProduto) throws RegraDeNegocioException {
 
-        PedidoEntity pedidoAchado = pedidoRepository.getById(idPedido);
-        if (pedidoAchado == null) throw new RegraDeNegocioException("Pedido não encontrado!");
+        PedidoEntity pedidoAchado = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado!"));
 
         validacaoPedidoFinalizado(pedidoAchado);
 
-        ProdutoEntity produtoEntityBuscado = produtoRepository.findByIdProduto(idProduto);
-        if (produtoEntityBuscado == null) throw new RegraDeNegocioException("Produto não encontrado!");
+        ProdutoEntity produtoEntityBuscado = produtoRepository.findById(idProduto)
+                .orElseThrow(() -> new RegraDeNegocioException("Produto não encontrado!"));
 
         pedidoAchado.addProduto(produtoEntityBuscado);
 
@@ -129,19 +131,21 @@ public class PedidoService {
     }
 
 
-    public void deletePedido(Integer idPedido) throws Exception {
+    public void deletePedido(Integer idPedido) throws RegraDeNegocioException {
 
         PedidoEntity pedidoEntity = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado!"));
 
-        pedidoEntity.getProdutoEntities().forEach(pedidoEntity::removerProduto);
+        List<ProdutoEntity> produtos = new CopyOnWriteArrayList<>(pedidoEntity.getProdutoEntities());
+
+        produtos.forEach(pedidoEntity::removerProduto);
 
         pedidoRepository.delete(pedidoEntity);
 
 
     }
 
-    public PedidoDTO atualizarStatusPedido(Integer idPedido) throws Exception {
+    public PedidoDTO atualizarStatusPedido(Integer idPedido) throws RegraDeNegocioException {
 
         PedidoEntity pedidoEntity = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado!"));

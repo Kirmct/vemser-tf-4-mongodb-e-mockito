@@ -11,7 +11,7 @@ import javax.validation.constraints.Positive;
 public class PedidoCreateDTO {
 
     @NotNull
-    @Positive
+    @Positive(message = "O id precisa ser positivo!")
     @Schema(description = "O ID do produto associado ao pedido", required = true)
     private Integer idProduto;
 
