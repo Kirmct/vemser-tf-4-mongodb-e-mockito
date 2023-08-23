@@ -24,7 +24,7 @@ public class PedidoEntity {
     private Integer idPedido;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", referencedColumnName = "id_cliente")
     private ClienteEntity cliente;
 
@@ -35,26 +35,37 @@ public class PedidoEntity {
     private String statusPedido;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "Pedido_X_Produto",
             joinColumns = @JoinColumn(name = "id_pedido"),
             inverseJoinColumns = @JoinColumn(name = "id_produto")
     )
     private List<ProdutoEntity> produtoEntities = new ArrayList<>();
 
+    @Column(name = "quantidade_produtos")
+    private Integer quantidadeProdutos = 0;
+
     public void addProduto(ProdutoEntity produtoEntity) {
         produtoEntity.addPedido(this);
         produtoEntities.add(produtoEntity);
+        atualizarQuantidadeProdutos();
         this.valor += produtoEntity.getValor();
+
     }
 
     public void removerProduto(ProdutoEntity produtoEntity) {
         Double valorProduto = produtoEntity.getValor();
         boolean remove = produtoEntities.remove(produtoEntity);
+        atualizarQuantidadeProdutos();
         if (remove) {
             this.valor -= valorProduto;
             produtoEntity.removePedido(this);
         }
+    }
+
+    public void atualizarQuantidadeProdutos(){
+
+        this.quantidadeProdutos = this.produtoEntities.size();
     }
 
 

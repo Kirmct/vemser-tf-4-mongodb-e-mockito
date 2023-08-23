@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.List;
 
 @Data
@@ -19,5 +20,7 @@ public class PedidoDTO {
     private Integer idCliente;
     private Double valor;
     private String statusPedido;
+
+    private Integer quantidadeProdutos;
 
 }

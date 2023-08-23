@@ -5,6 +5,7 @@ import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDadosCompletosDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClientePaginadoDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.ClienteService;
 import lombok.Data;
@@ -57,7 +58,7 @@ public class ClienteController implements ClienteControllerDoc {
     }
 
     @Override
-    public ResponseEntity<ClienteDTO> save(@Validated @RequestBody ClienteCreateDTO cliente) throws RegraDeNegocioException {
+    public ResponseEntity<ClienteDTO> save(@Validated @RequestBody ClienteCreateDTO cliente) throws RegraDeNegocioException, UniqueFieldExistsException {
         return new ResponseEntity<>(clienteService.save(cliente), HttpStatus.OK);
     }
 

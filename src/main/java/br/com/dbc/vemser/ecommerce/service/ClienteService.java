@@ -6,10 +6,10 @@ import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDadosCompletosDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClientePaginadoDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
-import br.com.dbc.vemser.ecommerce.dto.usuario.LoginDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
+import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,27 +39,30 @@ public class ClienteService {
     private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final ConverterPedidoParaDTOutil converterPedidoParaDTOutil;
 
-    public void criarMensagem(StringBuilder sb, ClienteCreateDTO clienteCreateDTO){
+    public Map<String, String> validarNovoCliente(ClienteCreateDTO clienteCreateDTO) {
+        Map<String, String> existe = new HashMap<>();
+
         if (clienteRepository.existsClienteEntitieByEmail(clienteCreateDTO.getEmail())) {
-            sb.append("Email já de cadastrado. ");
+            existe.put("email", "já cadastrado");
         }
         if (clienteRepository.existsClienteEntitieByCpf(clienteCreateDTO.getCpf())) {
-            sb.append("CPF já cadastrado. ");
+            existe.put("cpf", "já cadastrado");
         }
         if (clienteRepository.existsClienteEntitieByTelefone(clienteCreateDTO.getTelefone())) {
-            sb.append("Telefone já cadastrado.");
+            existe.put("telefone", "já cadastrado");
         }
+
+        return existe;
     }
 
-    public ClienteDTO save(ClienteCreateDTO clienteCreateDTO) throws RegraDeNegocioException {
+    public ClienteDTO save(ClienteCreateDTO clienteCreateDTO) throws UniqueFieldExistsException, RegraDeNegocioException {
+        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
 
 
-        StringBuilder sb = new StringBuilder();
-        criarMensagem(sb, clienteCreateDTO);
-
-        if (sb.length() > 0 ){
-            throw new RegraDeNegocioException(sb.toString());
+        if (campo.size() != 0) {
+            throw new UniqueFieldExistsException(campo);
         }
+
 
         UsuarioEntity user = new UsuarioEntity();
         String senhaCript = bCript.encode(clienteCreateDTO.getSenha());

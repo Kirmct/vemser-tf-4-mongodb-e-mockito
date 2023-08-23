@@ -4,6 +4,7 @@ import br.com.dbc.vemser.ecommerce.doc.PedidoControllerDoc;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.RelatorioPedidoDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.PedidoService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,7 @@ public class PedidoController implements PedidoControllerDoc {
     }
 
     @Override
-    public ResponseEntity<PedidoDTO> buscarByIdPedido(Integer idPedido) throws Exception {
+    public ResponseEntity<PedidoDTO> buscarByIdPedido(Integer idPedido) throws RegraDeNegocioException {
         return new ResponseEntity<>(pedidoService.buscarByIdPedido(idPedido), HttpStatus.OK);
     }
 

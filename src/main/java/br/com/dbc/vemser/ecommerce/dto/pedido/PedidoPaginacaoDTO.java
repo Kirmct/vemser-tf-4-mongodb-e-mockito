@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.List;
 
 @Data
@@ -23,5 +24,8 @@ public class PedidoPaginacaoDTO {
     private String statusPedido;
 
     private List<ProdutoEntity> produtos;
+
+
+    private Integer quantidadeProdutos;
 
 }

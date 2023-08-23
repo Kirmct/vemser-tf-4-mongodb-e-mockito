@@ -26,9 +26,9 @@ public class UsuarioService {
     private final PasswordEncoder bCrypt;
     private final CargoRepository cargoRepository;
 
-    public Optional<UsuarioEntity> findByLoginAndSenha(String login, String senha) {
-        return usuarioRepository.findByLoginAndSenha(login, senha);
-    }
+//    public Optional<UsuarioEntity> findByLoginAndSenha(String login, String senha) {
+//        return usuarioRepository.findByLoginAndSenha(login, senha);
+//    }
 
     public Optional<UsuarioEntity> findByLogin(String login) {
         return usuarioRepository.findByLogin(login);
