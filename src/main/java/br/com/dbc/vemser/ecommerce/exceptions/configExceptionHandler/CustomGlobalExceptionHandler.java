@@ -64,21 +64,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> handleException(RegraDeNegocioException exception,
                                                   HttpServletRequest request) {
 
-        if (exception.getCamposViolados().isEmpty()) {
-            Map<String, Object> body = new LinkedHashMap<>();
-            body.put("timestamp", new Date());
-            body.put("status", HttpStatus.BAD_REQUEST.value());
-            body.put("message", exception.getMessage());
-            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-        }
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("message", exception.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
 
-        Map<String, String> errors = exception.getCamposViolados();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("message", "Campos inválidos encontrados");
-        response.put("errors", errors);
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+
 }

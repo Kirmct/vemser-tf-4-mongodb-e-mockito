@@ -15,8 +15,9 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class EnderecoCreateDTO {
 
-    @Schema(description = "ID da pessoa associada ao endereço", required = true)
-    private Integer idCliente;
+//    @NotNull(message = "Não podemos criar endereços para endereço inexistente")
+//    @Schema(description = "ID da pessoa associada ao endereço", required = true)
+//    private Integer idCliente;
 
     @NotBlank
     @Size(max = 250, message = "Não pode conter mais de 250 caracteres")

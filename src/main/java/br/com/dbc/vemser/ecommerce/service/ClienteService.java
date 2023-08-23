@@ -40,26 +40,26 @@ public class ClienteService {
     private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final ConverterPedidoParaDTOutil converterPedidoParaDTOutil;
 
-    public Map<String, String> validarNovoCliente(ClienteCreateDTO clienteCreateDTO) {
-        Map<String, String> existe = new HashMap<>();
+    public void criarMensagem(StringBuilder sb, ClienteCreateDTO clienteCreateDTO){
         if (clienteRepository.existsClienteEntitieByEmail(clienteCreateDTO.getEmail())) {
-            existe.put("email", "já cadastrado");
+            sb.append("Email já de cadastrado. ");
         }
         if (clienteRepository.existsClienteEntitieByCpf(clienteCreateDTO.getCpf())) {
-            existe.put("cpf", "já cadastrado");
+            sb.append("CPF já cadastrado. ");
         }
         if (clienteRepository.existsClienteEntitieByTelefone(clienteCreateDTO.getTelefone())) {
-            existe.put("telefone", "já cadastrado");
+            sb.append("Telefone já cadastrado.");
         }
-
-        return existe;
     }
 
     public ClienteDTO save(ClienteCreateDTO clienteCreateDTO) throws RegraDeNegocioException {
-        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
 
-        if (campo.size() != 0) {
-            throw new RegraDeNegocioException(campo);
+
+        StringBuilder sb = new StringBuilder();
+        criarMensagem(sb, clienteCreateDTO);
+
+        if (sb.length() > 0 ){
+            throw new RegraDeNegocioException(sb.toString());
         }
 
         UsuarioEntity user = new UsuarioEntity();

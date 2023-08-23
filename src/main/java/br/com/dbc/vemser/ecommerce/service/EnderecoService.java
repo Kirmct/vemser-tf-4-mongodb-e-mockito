@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -59,12 +57,10 @@ public class EnderecoService {
                 .collect(Collectors.toList());
     }
 
-    public EnderecoDTO create(Integer idCliente, EnderecoCreateDTO enderecoCreateDTO) throws Exception {
-        ClienteEntity clienteEntity = clienteRepository.findById(idCliente).get();
-
-        if (clienteEntity == null) {
-            throw new RegraDeNegocioException("Cliente não encontrado");
-        }
+    public EnderecoDTO create(Integer idCliente, EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException {
+        ClienteEntity clienteEntity = clienteRepository.findById(idCliente).orElseThrow(
+                () -> new RegraDeNegocioException("Cliente não existe")
+        );
 
         EnderecoEntity entity = converterByEndereco(enderecoCreateDTO);
         entity.setCliente(clienteEntity);
@@ -81,13 +77,14 @@ public class EnderecoService {
         }
         EnderecoEntity endereco = enderecoOpt.get();
 
-        enderecoCreateDTO.setIdCliente(endereco.getCliente().getIdCliente());
         EnderecoEntity entity = converterByEndereco(enderecoCreateDTO);
         entity.setIdEndereco(idEndereco);
 
-        EnderecoEntity enderecoUpdated = enderecoRepository.save(entity);
+        entity.setCliente(endereco.getCliente());
+        EnderecoEntity novoEndereco = enderecoRepository.save(entity);
 
-        EnderecoDTO enderecoDTO = converterByEnderecoDTO(enderecoUpdated);
+
+        EnderecoDTO enderecoDTO = converterByEnderecoDTO(novoEndereco);
 
         return enderecoDTO;
     }
