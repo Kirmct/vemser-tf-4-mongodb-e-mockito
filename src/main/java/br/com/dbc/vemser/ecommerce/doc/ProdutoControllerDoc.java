@@ -5,6 +5,7 @@ import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoEntityDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoRelatorioDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -45,7 +46,7 @@ public interface ProdutoControllerDoc {
     )
     @GetMapping("listar-setor/{setor}")
     public ResponseEntity<List<ProdutoDTO>> listarProdutosPorSetor(
-            @PathVariable("setor") @NotBlank String setor);
+            @PathVariable("setor") @NotBlank String setor) throws RegraDeNegocioException;
 
 
     @Operation(summary = "Listar produto por ID", description = "Lista produto por ID no banco")
@@ -127,5 +128,5 @@ public interface ProdutoControllerDoc {
             }
     )
     @GetMapping("/relatorio-produto/")
-    public ResponseEntity<List<ProdutoRelatorioDTO>> listarRelatorioProduto();
+    public ResponseEntity<List<ProdutoRelatorioDTO>> listarRelatorioProduto() throws RegraDeNegocioException;
 }
