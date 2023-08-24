@@ -4,14 +4,15 @@ import br.com.dbc.vemser.ecommerce.dto.usuario.LoginDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UserAtualizacaoDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
+import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
+import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

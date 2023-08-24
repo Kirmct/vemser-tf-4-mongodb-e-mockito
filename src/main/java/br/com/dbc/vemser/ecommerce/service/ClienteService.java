@@ -8,11 +8,13 @@ import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
+import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
 import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
+import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.ConverterPedidoParaDTOutil;
@@ -23,6 +25,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

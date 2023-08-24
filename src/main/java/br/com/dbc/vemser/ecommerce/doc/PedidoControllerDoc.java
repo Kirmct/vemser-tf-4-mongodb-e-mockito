@@ -41,7 +41,7 @@ public interface PedidoControllerDoc {
             }
     )
     @GetMapping("/relatorio-cliente-pedido")
-    public ResponseEntity<List<RelatorioPedidoDTO>> listarClientesRelatorio();
+    public ResponseEntity<List<RelatorioPedidoDTO>> listarClientesRelatorio() throws Exception;
 
 
     @Operation(summary = "Listar todos os relatórios do pedidos paginado", description = "Lista de relatorio dos pedidos cadastrados no banco")
@@ -56,7 +56,7 @@ public interface PedidoControllerDoc {
     @GetMapping("/relatorio-cliente-pedido-paginado")
     public Page<RelatorioPedidoDTO> listarRelatorioPaginado(Integer pagina,
 
-                                                            Integer quantidadeRegistros);
+                                                            Integer quantidadeRegistros) throws Exception;
 
     @Operation(summary = "Buscar pedido por ID", description = "Buscar pedidos por ID")
     @ApiResponses(
