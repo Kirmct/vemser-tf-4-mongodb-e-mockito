@@ -1,7 +1,9 @@
 package br.com.dbc.vemser.ecommerce.controller;
 
 import br.com.dbc.vemser.ecommerce.doc.HistoricoControllerDoc;
+import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoContadorDTO;
 import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoDTO;
+import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.HistoricoService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,16 @@ public class HistoricoController implements HistoricoControllerDoc {
     @GetMapping("/{idHistorico}")
     public ResponseEntity<HistoricoDTO> findById(@PathVariable("idHistorico") String idHistorico) throws RegraDeNegocioException {
         return new ResponseEntity<>(historicoService.findById(idHistorico), HttpStatus.OK);
+    }
+
+    @GetMapping("/by-cargo")
+    public ResponseEntity<List<HistoricoDTO>> findByCargo(Cargo cargo) throws RegraDeNegocioException {
+        return new ResponseEntity<>(historicoService.findByCargo(cargo), HttpStatus.OK);
+    }
+
+    @GetMapping("/group-and-count-by-cargo")
+    public ResponseEntity<List<HistoricoContadorDTO>> groupByCargoAndCount() throws RegraDeNegocioException {
+        return new ResponseEntity<>(historicoService.groupByCargoAndCount(), HttpStatus.OK);
     }
 
 }

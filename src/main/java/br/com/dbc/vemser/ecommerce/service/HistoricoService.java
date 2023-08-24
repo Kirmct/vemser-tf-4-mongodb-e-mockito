@@ -1,7 +1,9 @@
 package br.com.dbc.vemser.ecommerce.service;
 
+import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoContadorDTO;
 import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoDTO;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
+import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +29,17 @@ public class HistoricoService {
                 () -> new RegraDeNegocioException("Histórico não encontrado")
         ));
     }
+
+    public List<HistoricoDTO> findByCargo(Cargo cargo){
+        return convertToDTOList(historicoRepository.findAllByCargo(cargo));
+    }
+    public List<HistoricoContadorDTO> groupByCargoAndCount() {
+        System.out.println(historicoRepository.groupByCargoAndCount());
+        return historicoRepository.groupByCargoAndCount().stream()
+                .map(log -> new HistoricoContadorDTO(log.getCargo(), log.getQuantidade()))
+                .collect(Collectors.toList());
+    }
+
 
     public HistoricoDTO convertToDTO(Historico historico){
         return objectMapper.convertValue(historico, HistoricoDTO.class);
