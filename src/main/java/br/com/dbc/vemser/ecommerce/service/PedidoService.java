@@ -10,6 +10,7 @@ import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.PedidoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoEntity;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
+import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
@@ -53,12 +54,13 @@ public class PedidoService {
             Integer idUsuario = usuarioService.getIdLoggedUser();
             String cargo = usuarioService.findByRole(idUsuario);
             historico.setCargo(Cargo.valueOf(cargo));
-            historico.setUsuario(usuarioLogadoDTO.getLogin() + ".");
+            historico.setUsuario(usuarioLogadoDTO.getLogin());
         }else {
-            historico.setCargo(Cargo.valueOf("REOLE_VISITANTE"));
+            historico.setCargo(Cargo.ROLE_VISITANTE);
             historico.setUsuario("Visitante");
         }
         historico.setAcao(msg);
+        historico.setSetor(Setor.PEDIDO);
         historico.setDataAcao(LocalDateTime.now());
         return historico;
     }
