@@ -32,19 +32,19 @@ public class PedidoController implements PedidoControllerDoc {
 
 
     @GetMapping
-    public ResponseEntity<List<PedidoDTO>> listar() {
+    public ResponseEntity<List<PedidoDTO>> listar() throws RegraDeNegocioException {
         return new ResponseEntity<>(pedidoService.listar(), HttpStatus.OK);
     }
 
     @GetMapping("/relatorio-cliente-pedido")
-    public ResponseEntity<List<RelatorioPedidoDTO>> listarClientesRelatorio() {
+    public ResponseEntity<List<RelatorioPedidoDTO>> listarClientesRelatorio() throws Exception{
         return new ResponseEntity<>(pedidoService.relatorioPedido(), HttpStatus.OK);
     }
 
     @GetMapping("/relatorio-cliente-pedido-paginado")
     public Page<RelatorioPedidoDTO> listarRelatorioPaginado(Integer pagina,
 
-                                                            Integer quantidadeRegistros) {
+                                                            Integer quantidadeRegistros) throws Exception{
 
         Sort ordenacao = Sort.by("valor").descending()
                 .and(Sort.by("statusPedido"));
