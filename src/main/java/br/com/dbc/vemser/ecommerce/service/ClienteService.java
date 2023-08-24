@@ -6,25 +6,33 @@ import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDadosCompletosDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClientePaginadoDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
+import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
+import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
+import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
+import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.ConverterPedidoParaDTOutil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -34,10 +42,27 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final CargoRepository cargoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
     private final PasswordEncoder bCript;
+    private final HistoricoRepository historicoRepository;
 
     private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final ConverterPedidoParaDTOutil converterPedidoParaDTOutil;
+
+    @SneakyThrows
+    private UsuarioEntity getUsuarioByToken() {
+        return usuarioRepository.findById(usuarioService.getIdLoggedUser()).orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado."));
+    }
+
+    private void addLog(UsuarioEntity usuario, String acao) {
+        Historico historico = new Historico();
+        historico.setUsuario(usuario.getLogin());
+        historico.setCargo(Cargo.valueOf(getUsuarioByToken().getCargos().stream().findFirst().orElseThrow().getNome()));
+        historico.setAcao(acao);
+        historico.setDataAcao(LocalDateTime.now());
+
+        historicoRepository.save(historico);
+    }
 
     public Map<String, String> validarNovoCliente(ClienteCreateDTO clienteCreateDTO) {
         Map<String, String> existe = new HashMap<>();
@@ -56,13 +81,11 @@ public class ClienteService {
     }
 
     public ClienteDTO save(ClienteCreateDTO clienteCreateDTO) throws UniqueFieldExistsException, RegraDeNegocioException {
-        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
-
-
-        if (campo.size() != 0) {
-            throw new UniqueFieldExistsException(campo);
-        }
-
+//        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
+//
+//        if (campo.size() != 0) {
+//            throw new UniqueFieldExistsException(campo);
+//        }
 
         UsuarioEntity user = new UsuarioEntity();
         String senhaCript = bCript.encode(clienteCreateDTO.getSenha());
@@ -77,26 +100,30 @@ public class ClienteService {
         }
 
         user.getCargos().add(userCargo.get());
-        UsuarioEntity novoUser = usuarioRepository.save(user);
+//        UsuarioEntity novoUser = usuarioRepository.save(user);
+//
+//        ClienteEntity cliente = objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
+//        cliente.setUsuario(novoUser);
+//
+//        ClienteDTO clienteDTO = convertToDto(clienteRepository.save((cliente)));
 
-        ClienteEntity cliente = objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
-        cliente.setUsuario(novoUser);
+//        clienteDTO.setIdUsuario(novoUser.getIdUsuario());
 
-        ClienteDTO clienteDTO = convertToDto(clienteRepository.save((cliente)));
+        addLog(user, "CADASTROU UM CLIENTE.");
 
-        clienteDTO.setIdUsuario(novoUser.getIdUsuario());
-
-        return clienteDTO;
+//        return clienteDTO;
+        return null;
     }
 
-    public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() {
-
+    public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
+        addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
         return clienteRepository.findAll()
                 .stream().map(this::converterClienteParaDTO).toList();
 
     }
 
     public List<ClienteDTO> findAll(Integer idCliente) {
+        addLog(getUsuarioByToken(), "Listou todos os clientes.");
         return clienteRepository.buscarTodosOptionalId(idCliente)
                 .stream()
                 .map(this::convertToDto)
@@ -104,12 +131,13 @@ public class ClienteService {
     }
 
     public Page<ClientePaginadoDTO> clientePaginado(Pageable pageable) {
-
+        addLog(getUsuarioByToken(), "Listou os clientes paginadamente.");
         return clienteRepository.buscarTodosClientesPaginados(pageable);
     }
 
     public ClienteDTO getByid(Integer idCliente) throws RegraDeNegocioException {
         ClienteDTO clienteDTO = convertToDto(findById(idCliente));
+        addLog(getUsuarioByToken(), "Buscou um cliente pelo ID.");
         return clienteDTO;
     }
 
@@ -120,18 +148,20 @@ public class ClienteService {
         findedClient.setTelefone(clienteCreateDTO.getTelefone());
         findedClient.setEmail(clienteCreateDTO.getEmail());
         ClienteDTO updatedClient = convertToDto(clienteRepository.save(findedClient));
+
+        addLog(getUsuarioByToken(), "Fez um update em " + findedClient.getNome() + ".");
         return updatedClient;
     }
 
     public void delete(Integer idCliente) {
+        addLog(getUsuarioByToken(), "Deletou um cliente.");
         ClienteEntity clienteEntity = clienteRepository.getById(idCliente);
         clienteRepository.delete(clienteEntity);
-
     }
-
 
     //metodos auxiliares
     public ClienteEntity findById(Integer idcliente) throws RegraDeNegocioException {
+        addLog(getUsuarioByToken(), "Buscou um cliente pelo ID.");
         return clienteRepository.findById(idcliente).orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado"));
     }
 
