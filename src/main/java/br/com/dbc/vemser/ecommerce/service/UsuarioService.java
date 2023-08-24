@@ -108,4 +108,8 @@ public class UsuarioService {
         usuarioRepository.save(usuarioRecuperado.get());
 
     }
+
+    public String findByRole(Integer idUsuario){
+        return usuarioRepository.findByRole(idUsuario);
+    }
 }
