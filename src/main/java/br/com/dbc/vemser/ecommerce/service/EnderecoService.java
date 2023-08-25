@@ -43,6 +43,9 @@ public class EnderecoService {
         for (EnderecoEntity endereco : enderecos) {
             enderecoDTOS.add(converterByEnderecoDTO(endereco));
         }
+
+        Historico historico = this.inserirHistorico("Realizando listagem de endereços");
+        historicoRepository.save(historico);
         return enderecoDTOS;
     }
 
@@ -60,6 +63,9 @@ public class EnderecoService {
         if (enderecos.isEmpty()) {
             throw new RegraDeNegocioException("Nenhum endereço encontrado para o cliente");
         }
+
+        Historico historico = this.inserirHistorico("Realizando listagem de endereços por cliente");
+        historicoRepository.save(historico);
 
         return enderecos.stream()
                 .map(this::converterByEnderecoDTO)
@@ -99,6 +105,9 @@ public class EnderecoService {
 
         EnderecoEntity enderecoUpdated = enderecoRepository.save(entity);
 
+        Historico historico = this.inserirHistorico("Endereço atualizado com sucesso!");
+        historicoRepository.save(historico);
+
         EnderecoDTO enderecoDTO = converterByEnderecoDTO(enderecoUpdated);
 
         return enderecoDTO;
@@ -109,6 +118,9 @@ public class EnderecoService {
         if (enderecoOpt.isPresent()) {
             EnderecoEntity endereco = enderecoOpt.get();
             enderecoRepository.delete(endereco);
+
+            Historico historico = this.inserirHistorico("Endereço deletado com sucesso!");
+            historicoRepository.save(historico);
         }
     }
 
