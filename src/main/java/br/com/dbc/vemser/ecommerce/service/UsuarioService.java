@@ -41,7 +41,13 @@ public class UsuarioService {
     }
 
     public UsuarioLogadoDTO getLoggedUser() throws RegraDeNegocioException {
-        UsuarioLogadoDTO usuarioLogadoDTO = objectMapper.convertValue(findById(getIdLoggedUser()), UsuarioLogadoDTO.class);
+        UsuarioLogadoDTO usuarioLogadoDTO = new UsuarioLogadoDTO();
+        try {
+            usuarioLogadoDTO = objectMapper.convertValue(findById(getIdLoggedUser()), UsuarioLogadoDTO.class);
+
+        }catch (NumberFormatException e){
+            System.err.println("Teste");
+        }
         return usuarioLogadoDTO;
     }
 
