@@ -5,6 +5,7 @@ import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoEntityDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoRelatorioDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.ProdutoService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class ProdutoController implements ProdutoControllerDoc {
 
     @GetMapping("listar-setor/{setor}")
     public ResponseEntity<List<ProdutoDTO>> listarProdutosPorSetor(
-            @PathVariable("setor") @NotBlank String setor) {
+            @PathVariable("setor") @NotBlank String setor) throws RegraDeNegocioException {
 
 
         return new ResponseEntity<>(produtoService.listarTodosPorSetor(setor), HttpStatus.OK);
@@ -52,7 +53,7 @@ public class ProdutoController implements ProdutoControllerDoc {
 
 
     @GetMapping("/relatorio-produto/")
-    public ResponseEntity<List<ProdutoRelatorioDTO>> listarRelatorioProduto() {
+    public ResponseEntity<List<ProdutoRelatorioDTO>> listarRelatorioProduto() throws RegraDeNegocioException {
 
         return new ResponseEntity<>(produtoService.buscarProdutosRelatorio(), HttpStatus.OK);
     }
