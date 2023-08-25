@@ -12,13 +12,12 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
-import br.com.dbc.vemser.ecommerce.utils.ConverterProdutoParaDTOutil;
+import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,20 +27,16 @@ public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
 
-    private final ConverterProdutoParaDTOutil converterProdutoParaDTOutil;
-
     private final UsuarioService usuarioService;
     private final HistoricoRepository historicoRepository;
 
     private Historico inserirHistorico(String msg) throws RegraDeNegocioException {
 
-        System.err.println("ENTROU AQUI");
         UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
-        System.err.println("SAIU AQUI");
+
         Historico historico = new Historico();
 
         if (usuarioLogadoDTO.getIdUsuario() != null){
-            System.err.println("ENTROU AQUI 2");
             Integer idUsuario = usuarioService.getIdLoggedUser();
             String cargo = usuarioService.findByRole(idUsuario);
             historico.setCargo(Cargo.valueOf(cargo));
@@ -60,7 +55,7 @@ public class ProdutoService {
         historicoRepository.save(historico);
 
         return produtoRepository.buscarTodosOptionalId(idProduto).stream()
-                .map(converterProdutoParaDTOutil::converteProdutoParaDTO).toList();
+                .map(produto -> ConversorMapper.converter(produto, ProdutoDTO.class)).toList();
     }
 
     public List<ProdutoDTO> listarTodosPorSetor(String setor) throws RegraDeNegocioException {
@@ -69,9 +64,8 @@ public class ProdutoService {
 
         return produtoRepository.findAll().stream()
                 .filter(produto -> produto.getSetor().toString().equalsIgnoreCase(setor))
-                .map(converterProdutoParaDTOutil::converteProdutoParaDTO).toList();
+                .map(produto -> ConversorMapper.converter(produto, ProdutoDTO.class)).toList();
     }
-
 
     public Page<ProdutoEntityDTO> listarPaginado(Pageable pageable) throws RegraDeNegocioException {
 
@@ -93,7 +87,8 @@ public class ProdutoService {
 
         Historico historico = inserirHistorico("Buscou produto por id!");
         historicoRepository.save(historico);
-        return converterProdutoParaDTOutil.converteProdutoParaDTO(produtoEntity);
+
+        return ConversorMapper.converter(produtoEntity, ProdutoDTO.class);
 
     }
 
@@ -142,13 +137,13 @@ public class ProdutoService {
             throw new RegraDeNegocioException("Valor do produto inválido.");
         }
 
-        ProdutoEntity produtoEntity = converterProdutoParaDTOutil.converteDTOparaProduto(produtoCreateDTO);
+        ProdutoEntity produtoEntity = ConversorMapper.converter(produtoCreateDTO, ProdutoEntity.class);
         ProdutoEntity produtoEntitySalvo = produtoRepository.save(produtoEntity);
 
         Historico historico = inserirHistorico("Cadastrou um novo produto. Modelo: " + produtoCreateDTO.getModelo() + ".");
         historicoRepository.save(historico);
 
-        return converterProdutoParaDTOutil.converteProdutoParaDTO(produtoEntitySalvo);
+        return ConversorMapper.converter(produtoEntitySalvo, ProdutoDTO.class);
     }
 
 
@@ -197,11 +192,11 @@ public class ProdutoService {
             throw new RegraDeNegocioException("Valor do produto inválido.");
         }
 
-        ProdutoEntity produtoEntity = converterProdutoParaDTOutil.converteDTOparaProduto(produtoCreateDTO);
+        ProdutoEntity produtoEntity = ConversorMapper.converter(produtoCreateDTO, ProdutoEntity.class);
 
         ProdutoEntity produtoEntityAtualizado = produtoRepository.save(produtoEntity);
 
-        return converterProdutoParaDTOutil.converteProdutoParaDTO(produtoEntityAtualizado);
+        return ConversorMapper.converter(produtoEntityAtualizado, ProdutoDTO.class);
     }
 
     public void deletar(Integer idProduto) throws RegraDeNegocioException {
