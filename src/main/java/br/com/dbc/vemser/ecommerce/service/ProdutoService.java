@@ -34,11 +34,14 @@ public class ProdutoService {
     private final HistoricoRepository historicoRepository;
 
     private Historico inserirHistorico(String msg) throws RegraDeNegocioException {
-        UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
 
+        System.err.println("ENTROU AQUI");
+        UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
+        System.err.println("SAIU AQUI");
         Historico historico = new Historico();
 
         if (usuarioLogadoDTO.getIdUsuario() != null){
+            System.err.println("ENTROU AQUI 2");
             Integer idUsuario = usuarioService.getIdLoggedUser();
             String cargo = usuarioService.findByRole(idUsuario);
             historico.setCargo(Cargo.valueOf(cargo));
