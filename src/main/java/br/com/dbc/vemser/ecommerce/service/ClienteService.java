@@ -18,6 +18,7 @@ import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
+import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.ConverterPedidoParaDTOutil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,19 +101,18 @@ public class ClienteService {
         }
 
         user.getCargos().add(userCargo.get());
-//        UsuarioEntity novoUser = usuarioRepository.save(user);
-//
-//        ClienteEntity cliente = objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
-//        cliente.setUsuario(novoUser);
-//
-//        ClienteDTO clienteDTO = convertToDto(clienteRepository.save((cliente)));
+        UsuarioEntity novoUser = usuarioRepository.save(user);
 
-//        clienteDTO.setIdUsuario(novoUser.getIdUsuario());
+        ClienteEntity cliente = objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
+        cliente.setUsuario(novoUser);
+//
+        ClienteDTO clienteDTO =  ConversorMapper.converter(clienteRepository.save((cliente)), ClienteDTO.class);
+
+        clienteDTO.setIdUsuario(novoUser.getIdUsuario());
 
         addLog(user, "CADASTROU UM CLIENTE.");
 
-//        return clienteDTO;
-        return null;
+        return clienteDTO;
     }
 
     public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
