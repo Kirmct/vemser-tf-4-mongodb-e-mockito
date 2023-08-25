@@ -32,7 +32,7 @@ public class ClienteController implements ClienteControllerDoc {
     private final ClienteService clienteService;
 
     @Override
-    public ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos() {
+    public ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listarClientesComTodosOsDados(), HttpStatus.OK);
     }
 

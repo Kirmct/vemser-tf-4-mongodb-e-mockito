@@ -30,7 +30,7 @@ public interface ClienteControllerDoc {
             }
     )
     @GetMapping("/clientes-dados-completos")
-    ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos();
+    ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos() throws RegraDeNegocioException;
 
 
     @Operation(summary = "Listar todos clientes", description = "Lista todos os clientes do banco")
