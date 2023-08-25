@@ -4,6 +4,7 @@ import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoContadorDTO;
 import br.com.dbc.vemser.ecommerce.dto.historico.HistoricoDTO;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
+import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,10 @@ public class HistoricoService {
         return historicoRepository.groupByCargoAndCount().stream()
                 .map(log -> new HistoricoContadorDTO(log.getCargo(), log.getQuantidade()))
                 .collect(Collectors.toList());
+    }
+
+    public List<HistoricoDTO> findBySetor(Setor setor){
+        return convertToDTOList(historicoRepository.findAllBySetor(setor));
     }
 
 
