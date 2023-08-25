@@ -36,7 +36,7 @@ public class ProdutoService {
 
         Historico historico = new Historico();
 
-        if (usuarioLogadoDTO.getIdUsuario() != null){
+        if (usuarioLogadoDTO != null && usuarioLogadoDTO.getIdUsuario() != null){
             Integer idUsuario = usuarioService.getIdLoggedUser();
             String cargo = usuarioService.findByRole(idUsuario);
             historico.setCargo(Cargo.valueOf(cargo));
