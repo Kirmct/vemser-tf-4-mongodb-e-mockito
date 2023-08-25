@@ -24,7 +24,7 @@ public class PedidoEntity {
     private Integer idPedido;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", referencedColumnName = "id_cliente")
     private ClienteEntity cliente;
 
@@ -35,7 +35,8 @@ public class PedidoEntity {
     private String statusPedido;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "Pedido_X_Produto",
             joinColumns = @JoinColumn(name = "id_pedido"),
             inverseJoinColumns = @JoinColumn(name = "id_produto")
