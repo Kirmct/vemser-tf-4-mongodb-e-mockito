@@ -3,17 +3,22 @@ package br.com.dbc.vemser.ecommerce.service;
 
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
+import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.EnderecoEntity;
+import br.com.dbc.vemser.ecommerce.entity.Historico;
+import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.EnderecoRepository;
+import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +33,8 @@ public class EnderecoService {
     private final EnderecoRepository enderecoRepository;
     private final ClienteRepository clienteRepository;
     private final ObjectMapper objectMapper;
+    private final HistoricoRepository historicoRepository;
+    private final UsuarioService usuarioService;
 
     public List<EnderecoDTO> listarEnderecos() throws Exception {
         List<EnderecoEntity> enderecos = enderecoRepository.findAll();
@@ -36,6 +43,9 @@ public class EnderecoService {
         for (EnderecoEntity endereco : enderecos) {
             enderecoDTOS.add(converterByEnderecoDTO(endereco));
         }
+
+        Historico historico = this.inserirHistorico("Realizando listagem de endereços");
+        historicoRepository.save(historico);
         return enderecoDTOS;
     }
 
@@ -53,6 +63,9 @@ public class EnderecoService {
         if (enderecos.isEmpty()) {
             throw new RegraDeNegocioException("Nenhum endereço encontrado para o cliente");
         }
+
+        Historico historico = this.inserirHistorico("Realizando listagem de endereços por cliente");
+        historicoRepository.save(historico);
 
         return enderecos.stream()
                 .map(this::converterByEnderecoDTO)
@@ -73,6 +86,9 @@ public class EnderecoService {
 
         EnderecoEntity enderecoCreated = enderecoRepository.save(entity);
 
+        Historico historico = this.inserirHistorico("Endereço cadastrado com sucesso!");
+        historicoRepository.save(historico);
+
         return converterByEnderecoDTO(enderecoCreated);
     }
 
@@ -89,6 +105,9 @@ public class EnderecoService {
 
         EnderecoEntity enderecoUpdated = enderecoRepository.save(entity);
 
+        Historico historico = this.inserirHistorico("Endereço atualizado com sucesso!");
+        historicoRepository.save(historico);
+
         EnderecoDTO enderecoDTO = converterByEnderecoDTO(enderecoUpdated);
 
         return enderecoDTO;
@@ -99,6 +118,9 @@ public class EnderecoService {
         if (enderecoOpt.isPresent()) {
             EnderecoEntity endereco = enderecoOpt.get();
             enderecoRepository.delete(endereco);
+
+            Historico historico = this.inserirHistorico("Endereço deletado com sucesso!");
+            historicoRepository.save(historico);
         }
     }
 
@@ -126,6 +148,25 @@ public class EnderecoService {
         entity.setEstado(enderecoCreateDTO.getEstado());
         entity.setBairro(enderecoCreateDTO.getBairro());
         return entity;
+    }
+
+    private Historico inserirHistorico(String msg) throws RegraDeNegocioException {
+        UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
+
+        Historico historico = new Historico();
+
+        if (usuarioLogadoDTO.getIdUsuario() != null){
+            Integer idUsuario = usuarioService.getIdLoggedUser();
+            String cargo = usuarioService.findByRole(idUsuario);
+            historico.setCargo(Cargo.valueOf(cargo));
+            historico.setUsuario(usuarioLogadoDTO.getLogin() + ".");
+        }else {
+            historico.setCargo(Cargo.valueOf("REOLE_VISITANTE"));
+            historico.setUsuario("Visitante");
+        }
+        historico.setAcao(msg);
+        historico.setDataAcao(LocalDateTime.now());
+        return historico;
     }
 
 
