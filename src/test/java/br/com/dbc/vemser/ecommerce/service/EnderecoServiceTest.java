@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 
 @ExtendWith(MockitoExtension.class)
 class EnderecoServiceTest {
@@ -203,7 +202,7 @@ class EnderecoServiceTest {
                 .thenReturn(Optional.of(clienteEntity));
 
         Mockito.when(converterEnderecoParaDTOutil
-                .converterByEndereco(any(EnderecoCreateDTO.class)))
+                        .converterByEndereco(any(EnderecoCreateDTO.class)))
                 .thenReturn(endereco);
 
         Mockito.when(enderecoRepository.save(any(EnderecoEntity.class)))
@@ -236,6 +235,100 @@ class EnderecoServiceTest {
                 () -> enderecoService.create(1, enderecoCreateDTO()));
     }
 
+    @Test
+    void atualizarEndereco() throws RegraDeNegocioException {
+
+        Integer idEndereco = 1;
+
+        EnderecoEntity endereco = listaEnderecos.get(0);
+
+
+        Mockito.when(enderecoRepository.findById(idEndereco))
+                .thenReturn(Optional.ofNullable(endereco));
+
+
+        endereco.setLogradouro("Rua Nova");
+
+        Mockito.when(converterEnderecoParaDTOutil
+                        .converterByEndereco(any(EnderecoCreateDTO.class)))
+                .thenReturn(endereco);
+
+        Mockito.when(enderecoRepository.save(any(EnderecoEntity.class))).thenReturn(endereco);
+
+        EnderecoDTO enderecoConvertido = conversorDTO.converterByEnderecoDTO(endereco);
+
+        Mockito.when(converterEnderecoParaDTOutil
+                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
+                .thenReturn(enderecoConvertido);
+
+        String MENSAGEM_ENDERECO = "Endereço atualizado com sucesso!";
+
+        Historico historico = criarHistorico(MENSAGEM_ENDERECO);
+
+        Mockito.when(historicoBuilder.inserirHistorico(any()))
+                .thenReturn(historico);
+
+        Mockito.when(historicoRepository.save(any(Historico.class)))
+                .thenReturn(historico);
+
+        Historico historicoPersistencia = historicoRepository.save(historico);
+
+
+        EnderecoDTO enderecoAtualizado = enderecoService.update(idEndereco, enderecoCreateDTO());
+
+
+        Assertions.assertEquals(historicoPersistencia.getAcao(), "Endereço atualizado com sucesso!");
+
+        Assertions.assertNotNull(enderecoAtualizado);
+        Assertions.assertEquals(enderecoConvertido, enderecoAtualizado);
+        Assertions.assertThrows(RegraDeNegocioException.class,
+                () -> enderecoService.update(2, enderecoCreateDTO()));
+
+
+    }
+
+
+
+    @Test
+    void deletarEndereco() throws RegraDeNegocioException {
+
+        Integer idEndereco = 1;
+
+        EnderecoEntity endereco = listaEnderecos.get(0);
+
+        Mockito.when(enderecoRepository.findById(idEndereco))
+                .thenReturn(Optional.ofNullable(endereco));
+
+        Mockito.doNothing().when(enderecoRepository).delete(endereco);
+
+
+        String MENSAGEM_ENDERECO = "Endereço deletado com sucesso!";
+
+        Historico historico = criarHistorico(MENSAGEM_ENDERECO);
+
+        Mockito.when(historicoBuilder.inserirHistorico(any()))
+                .thenReturn(historico);
+
+        Mockito.when(historicoRepository.save(any(Historico.class)))
+                .thenReturn(historico);
+
+        Historico historicoPersistencia = historicoRepository.save(historico);
+
+        enderecoService.delete(idEndereco);
+
+
+
+        Assertions.assertNotNull(historicoPersistencia);
+
+        Mockito.verify(enderecoRepository,
+                Mockito.times(1)).delete(endereco);
+
+        Assertions.assertThrows(RegraDeNegocioException.class,
+                () -> enderecoService.delete(2));
+
+
+    }
+
 
     private Historico criarHistorico(String MENSAGEM_ACAO) {
         Historico historico = new Historico();
@@ -249,9 +342,9 @@ class EnderecoServiceTest {
 
     private EnderecoCreateDTO enderecoCreateDTO() {
 
-        return new EnderecoCreateDTO( "Rua a",
-                        123, "casa", "34553453",
-                        "Bairro a", "cidade a", "estado a");
+        return new EnderecoCreateDTO("Rua a",
+                123, "casa", "34553453",
+                "Bairro a", "cidade a", "estado a");
     }
 
 

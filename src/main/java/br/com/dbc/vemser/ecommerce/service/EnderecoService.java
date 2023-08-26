@@ -3,7 +3,6 @@ package br.com.dbc.vemser.ecommerce.service;
 
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoUpdateDTO;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.EnderecoEntity;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
@@ -13,9 +12,7 @@ import br.com.dbc.vemser.ecommerce.repository.EnderecoRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +29,7 @@ public class EnderecoService {
     private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final HistoricoRepository historicoRepository;
     private final HistoricoBuilder historicoBuilder;
-//    private final UsuarioService usuarioService;
+
 
     public List<EnderecoDTO> listarEnderecos() throws RegraDeNegocioException {
         List<EnderecoEntity> enderecos = enderecoRepository.findAll();
@@ -87,12 +84,12 @@ public class EnderecoService {
         return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoCreated);
     }
 
-    public EnderecoDTO update(Integer idEndereco, EnderecoUpdateDTO enderecoUpdateDTO) throws RegraDeNegocioException {
+    public EnderecoDTO update(Integer idEndereco, EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException {
         EnderecoEntity enderecoOpt = enderecoRepository.findById(idEndereco)
                 .orElseThrow(() -> new RegraDeNegocioException("Endereço não encontrado"));
 
         EnderecoEntity enderecoAtualizar = converterEnderecoParaDTOutil
-                .converterEndUpdateByEndereco(enderecoUpdateDTO);
+                .converterByEndereco(enderecoCreateDTO);
 
         enderecoAtualizar.setIdEndereco(enderecoOpt.getIdEndereco());
         enderecoAtualizar.setCliente(enderecoOpt.getCliente());
@@ -107,15 +104,17 @@ public class EnderecoService {
         return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
     }
 
-    public void delete(Integer idEndereco) throws Exception {
-        Optional<EnderecoEntity> enderecoOpt = enderecoRepository.findById(idEndereco);
-        if (enderecoOpt.isPresent()) {
-            EnderecoEntity endereco = enderecoOpt.get();
+    public void delete(Integer idEndereco) throws RegraDeNegocioException {
+        EnderecoEntity enderecoOpt = enderecoRepository.findById(idEndereco)
+                .orElseThrow(() -> new RegraDeNegocioException("Endereço não encontrado"));
+
+            EnderecoEntity endereco = enderecoOpt;
+
             enderecoRepository.delete(endereco);
 
             Historico historico = historicoBuilder.inserirHistorico("Endereço deletado com sucesso!");
             historicoRepository.save(historico);
-        }
+
     }
 
 

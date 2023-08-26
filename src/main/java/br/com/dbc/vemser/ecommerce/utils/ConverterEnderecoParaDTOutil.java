@@ -3,7 +3,6 @@ package br.com.dbc.vemser.ecommerce.utils;
 
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoUpdateDTO;
 import br.com.dbc.vemser.ecommerce.entity.EnderecoEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -37,8 +36,5 @@ public class ConverterEnderecoParaDTOutil {
         return entity;
     }
 
-    public EnderecoEntity converterEndUpdateByEndereco(EnderecoUpdateDTO enderecoUpdateDTO) {
-        EnderecoEntity entity = objectMapper.convertValue(enderecoUpdateDTO, EnderecoEntity.class);
-        return entity;
-    }
+
 }
