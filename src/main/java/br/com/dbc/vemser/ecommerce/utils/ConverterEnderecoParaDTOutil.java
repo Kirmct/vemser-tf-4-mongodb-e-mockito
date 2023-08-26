@@ -34,17 +34,6 @@ public class ConverterEnderecoParaDTOutil {
     public EnderecoEntity converterByEndereco(EnderecoCreateDTO enderecoCreateDTO) {
         EnderecoEntity entity = objectMapper.convertValue(enderecoCreateDTO, EnderecoEntity.class);
 
-
-//        EnderecoEntity enderecoEntity = new EnderecoEntity();
-//        enderecoEntity.setCliente(endereco.getCliente().getIdCliente());
-//        enderecoEntity.setLogradouro(endereco.getLogradouro());
-//        enderecoEntity.setNumero(endereco.getNumero());
-//        enderecoEntity.setComplemento(endereco.getComplemento());
-//        enderecoEntity.setCep(endereco.getCep());
-//        enderecoEntity.setCidade(endereco.getCidade());
-//        enderecoEntity.setEstado(endereco.getEstado());
-//        enderecoEntity.setBairro(endereco.getBairro());
-
         return entity;
     }
 

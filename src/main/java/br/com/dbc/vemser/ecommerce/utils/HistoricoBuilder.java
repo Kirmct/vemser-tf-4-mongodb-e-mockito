@@ -6,12 +6,14 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.UsuarioService;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Data
+
 @Component
+@RequiredArgsConstructor
 public class HistoricoBuilder {
 
     private final UsuarioService usuarioService;

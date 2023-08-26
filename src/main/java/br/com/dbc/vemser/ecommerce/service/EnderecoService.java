@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+
 @Service
 @RequiredArgsConstructor
 public class EnderecoService {
@@ -33,7 +32,7 @@ public class EnderecoService {
     private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final HistoricoRepository historicoRepository;
     private final HistoricoBuilder historicoBuilder;
-    private final UsuarioService usuarioService;
+//    private final UsuarioService usuarioService;
 
     public List<EnderecoDTO> listarEnderecos() throws RegraDeNegocioException {
         List<EnderecoEntity> enderecos = enderecoRepository.findAll();
@@ -56,7 +55,7 @@ public class EnderecoService {
         return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoOpt);
     }
 
-    public List<EnderecoDTO> listarEnderecoByIdCliente(Integer idCliente) throws Exception {
+    public List<EnderecoDTO> listarEnderecoByIdCliente(Integer idCliente) throws RegraDeNegocioException {
         List<EnderecoEntity> enderecos = enderecoRepository
                 .findEnderecoEntityByCliente_IdCliente(idCliente);
         if (enderecos.isEmpty()) {
@@ -71,17 +70,14 @@ public class EnderecoService {
                 .collect(Collectors.toList());
     }
 
-    public EnderecoDTO create(Integer idCliente, EnderecoCreateDTO enderecoCreateDTO) throws Exception {
+    public EnderecoDTO create(Integer idCliente, EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException {
 
-        Optional<ClienteEntity> clienteEntity = clienteRepository.findById(idCliente);
+        ClienteEntity clienteEntity = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado"));
 
-
-        if (clienteEntity.isEmpty()) {
-            throw new RegraDeNegocioException("Cliente não encontrado");
-        }
 
         EnderecoEntity entity = converterEnderecoParaDTOutil.converterByEndereco(enderecoCreateDTO);
-        entity.setCliente(clienteEntity.get());
+        entity.setCliente(clienteEntity);
 
         EnderecoEntity enderecoCreated = enderecoRepository.save(entity);
 
@@ -107,9 +103,8 @@ public class EnderecoService {
         Historico historico = historicoBuilder.inserirHistorico("Endereço atualizado com sucesso!");
         historicoRepository.save(historico);
 
-        EnderecoDTO enderecoDTO = converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
 
-        return enderecoDTO;
+        return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
     }
 
     public void delete(Integer idEndereco) throws Exception {

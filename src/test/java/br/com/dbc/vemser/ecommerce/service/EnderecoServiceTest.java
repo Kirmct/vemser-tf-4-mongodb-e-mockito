@@ -1,9 +1,11 @@
 package br.com.dbc.vemser.ecommerce.service;
 
+import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.entity.*;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
+import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.EnderecoRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
@@ -17,11 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -42,13 +42,16 @@ class EnderecoServiceTest {
     @Mock
     private HistoricoRepository historicoRepository;
 
+    @Mock
+    private ClienteRepository clienteRepository;
+
     private ConverterEnderecoParaDTOutil conversorDTO =
             new ConverterEnderecoParaDTOutil(new ObjectMapper());
     private List<EnderecoEntity> listaEnderecos = new ArrayList<>();
     private List<EnderecoDTO> listaEnderecoDTO = new ArrayList<>();
 
     private CargoEntity cargoEntity = new CargoEntity();
-    private  UsuarioEntity usuarioEntity = new UsuarioEntity();
+    private UsuarioEntity usuarioEntity = new UsuarioEntity();
 
 
     @BeforeEach
@@ -69,9 +72,8 @@ class EnderecoServiceTest {
         usuarioEntity.setSenha(SENHA);
         usuarioEntity.setCargos(new HashSet<>(Arrays.asList(cargoEntity)));
 
-
-
     }
+
     @BeforeEach
     void carregarListaEnderecos() {
 
@@ -103,15 +105,12 @@ class EnderecoServiceTest {
     @Test
     void listarEnderecos() throws Exception {
 
-
-        AtomicInteger contador = new AtomicInteger(0);
-        AtomicInteger contador2 = new AtomicInteger(0);
-
         Mockito.when(enderecoRepository.findAll()).thenReturn(listaEnderecos);
 
         Mockito.when(converterEnderecoParaDTOutil
                         .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(listaEnderecoDTO.get(contador2.getAndIncrement()));
+                .thenReturn(listaEnderecoDTO.get(0))
+                .thenReturn(listaEnderecoDTO.get(1));
 
         String MENSAGEM_ACAO = "Realizando listagem de endereços";
 
@@ -135,12 +134,12 @@ class EnderecoServiceTest {
     }
 
     @Test
-    void buscaEnderecoById() throws RegraDeNegocioException{
+    void buscaEnderecoById() throws RegraDeNegocioException {
 
         Integer idEndereco = 1;
 
         Mockito.when(enderecoRepository.findById(idEndereco))
-                .thenReturn(Optional.ofNullable(listaEnderecos.get(0))) ;
+                .thenReturn(Optional.ofNullable(listaEnderecos.get(0)));
 
         Mockito.when(converterEnderecoParaDTOutil
                         .converterByEnderecoDTO(any(EnderecoEntity.class)))
@@ -153,6 +152,91 @@ class EnderecoServiceTest {
                 () -> enderecoService.getEnderecoById(2));
     }
 
+
+    @Test
+    void buscaEnderecoByIdCliente() throws RegraDeNegocioException {
+
+        Integer idCliente = 1;
+
+
+        Mockito.when(enderecoRepository.findEnderecoEntityByCliente_IdCliente(idCliente))
+                .thenReturn(listaEnderecos);
+
+        Mockito.when(converterEnderecoParaDTOutil
+                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
+                .thenReturn(listaEnderecoDTO.get(0))
+                .thenReturn(listaEnderecoDTO.get(1));
+
+
+        String MENSAGEM_ACAO = "Realizando listagem de endereços por cliente";
+
+
+        Historico historico = criarHistorico(MENSAGEM_ACAO);
+
+        Mockito.when(historicoBuilder.inserirHistorico(any()))
+                .thenReturn(historico);
+
+        Mockito.when(historicoRepository.save(any(Historico.class)))
+                .thenReturn(historico);
+
+        Historico historicoPersistencia = historicoRepository.save(historico);
+
+
+        List<EnderecoDTO> enderecoDTOS = enderecoService.listarEnderecoByIdCliente(idCliente);
+
+        Assertions.assertEquals(listaEnderecoDTO, enderecoDTOS);
+        Assertions.assertThrows(RegraDeNegocioException.class,
+                () -> enderecoService.listarEnderecoByIdCliente(2));
+        Assertions.assertNotNull(historicoPersistencia);
+    }
+
+    @Test
+    void criarEndereco() throws RegraDeNegocioException {
+
+        Integer idCliente = 2;
+        ClienteEntity clienteEntity = criarCliente(idCliente);
+        EnderecoEntity endereco = listaEnderecos.get(0);
+        endereco.setCliente(clienteEntity);
+        EnderecoDTO enderecoDTO = conversorDTO.converterByEnderecoDTO(endereco);
+
+        Mockito.when(clienteRepository.findById(idCliente))
+                .thenReturn(Optional.of(clienteEntity));
+
+        Mockito.when(converterEnderecoParaDTOutil
+                .converterByEndereco(any(EnderecoCreateDTO.class)))
+                .thenReturn(endereco);
+
+        Mockito.when(enderecoRepository.save(any(EnderecoEntity.class)))
+                .thenReturn(endereco);
+
+        Mockito.when(converterEnderecoParaDTOutil
+                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
+                .thenReturn(enderecoDTO);
+
+
+        Historico historico = criarHistorico("Endereço criado!");
+
+        Mockito.when(historicoBuilder.inserirHistorico(any()))
+                .thenReturn(historico);
+
+        Mockito.when(historicoRepository.save(any(Historico.class)))
+                .thenReturn(historico);
+
+        Historico historicoPersistencia = historicoRepository.save(historico);
+
+
+        EnderecoDTO enderecoCriado = enderecoService.create(idCliente, enderecoCreateDTO());
+
+
+        Assertions.assertNotNull(historicoPersistencia);
+
+        Assertions.assertEquals(enderecoCriado, enderecoDTO);
+
+        Assertions.assertThrows(RegraDeNegocioException.class,
+                () -> enderecoService.create(1, enderecoCreateDTO()));
+    }
+
+
     private Historico criarHistorico(String MENSAGEM_ACAO) {
         Historico historico = new Historico();
         historico.setId("1");
@@ -161,5 +245,24 @@ class EnderecoServiceTest {
         historico.setAcao(MENSAGEM_ACAO);
         historico.setCargo(Cargo.valueOf(cargoEntity.getNome()));
         return historico;
+    }
+
+    private EnderecoCreateDTO enderecoCreateDTO() {
+
+        return new EnderecoCreateDTO( "Rua a",
+                        123, "casa", "34553453",
+                        "Bairro a", "cidade a", "estado a");
+    }
+
+
+    private ClienteEntity criarCliente(Integer idCliente) {
+
+        ClienteEntity cliente = new ClienteEntity();
+        cliente.setIdCliente(idCliente);
+        cliente.setNome("cliente " + idCliente);
+        cliente.setCpf("3453451");
+        cliente.setEmail("cliente@cliente.com");
+
+        return cliente;
     }
 }
