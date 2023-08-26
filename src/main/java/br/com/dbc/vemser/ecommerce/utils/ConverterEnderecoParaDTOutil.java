@@ -18,13 +18,33 @@ public class ConverterEnderecoParaDTOutil {
     private final ObjectMapper objectMapper;
 
     public EnderecoDTO converterByEnderecoDTO(EnderecoEntity endereco) {
-        EnderecoDTO enderecoDTO = objectMapper.convertValue(endereco, EnderecoDTO.class);
+        EnderecoDTO enderecoDTO = new EnderecoDTO();
+        enderecoDTO.setIdEndereco(endereco.getIdEndereco());
         enderecoDTO.setIdCliente(endereco.getCliente().getIdCliente());
+        enderecoDTO.setLogradouro(endereco.getLogradouro());
+        enderecoDTO.setNumero(endereco.getNumero());
+        enderecoDTO.setComplemento(endereco.getComplemento());
+        enderecoDTO.setCep(endereco.getCep());
+        enderecoDTO.setCidade(endereco.getCidade());
+        enderecoDTO.setEstado(endereco.getEstado());
+        enderecoDTO.setBairro(endereco.getBairro());
         return enderecoDTO;
     }
 
     public EnderecoEntity converterByEndereco(EnderecoCreateDTO enderecoCreateDTO) {
         EnderecoEntity entity = objectMapper.convertValue(enderecoCreateDTO, EnderecoEntity.class);
+
+
+//        EnderecoEntity enderecoEntity = new EnderecoEntity();
+//        enderecoEntity.setCliente(endereco.getCliente().getIdCliente());
+//        enderecoEntity.setLogradouro(endereco.getLogradouro());
+//        enderecoEntity.setNumero(endereco.getNumero());
+//        enderecoEntity.setComplemento(endereco.getComplemento());
+//        enderecoEntity.setCep(endereco.getCep());
+//        enderecoEntity.setCidade(endereco.getCidade());
+//        enderecoEntity.setEstado(endereco.getEstado());
+//        enderecoEntity.setBairro(endereco.getBairro());
+
         return entity;
     }
 
