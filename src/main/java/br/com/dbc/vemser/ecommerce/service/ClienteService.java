@@ -113,7 +113,7 @@ public class ClienteService {
     }
 
     public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
-//        addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
+        addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
         return clienteRepository.findAll()
                 .stream().map(cliente -> {
                     ClienteDadosCompletosDTO clienteConvertido = ConversorMapper.converter(cliente, ClienteDadosCompletosDTO.class);
