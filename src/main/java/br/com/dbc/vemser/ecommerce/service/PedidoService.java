@@ -133,7 +133,7 @@ public class PedidoService {
 
         PedidoDTO pedidoDTO = objectMapper.convertValue(pedido, PedidoDTO.class);
         pedidoDTO.setIdCliente(pedido.getCliente().getIdCliente());
-        pedidoDTO.setProdutos(pedido.getProdutoEntities());
+        pedidoDTO.setProdutoEntities(pedido.getProdutoEntities());
 
         return pedidoDTO;
     }

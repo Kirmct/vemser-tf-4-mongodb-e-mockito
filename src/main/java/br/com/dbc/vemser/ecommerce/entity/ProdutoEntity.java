@@ -56,7 +56,7 @@ public class ProdutoEntity {
     private Double valor;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "produtoEntities", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "produtoEntities", cascade = CascadeType.ALL)
     private List<PedidoEntity> pedidos = new ArrayList<>();
 
     @Column(name = "IMG_URL")

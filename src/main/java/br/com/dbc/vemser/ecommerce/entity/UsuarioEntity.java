@@ -1,19 +1,21 @@
 package br.com.dbc.vemser.ecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
 @Entity(name = "USUARIO")
 public class UsuarioEntity implements UserDetails {
 
@@ -36,7 +38,7 @@ public class UsuarioEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "ID_USUARIO"),
             inverseJoinColumns = @JoinColumn(name = "ID_CARGO")
     )
-    private Set<CargoEntity> cargos = new HashSet<>();
+    private List<CargoEntity> cargos = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

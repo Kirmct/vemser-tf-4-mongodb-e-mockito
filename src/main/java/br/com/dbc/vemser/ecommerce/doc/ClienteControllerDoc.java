@@ -80,7 +80,7 @@ public interface ClienteControllerDoc {
             }
     )
     @PutMapping("/{idCliente}")
-    public ResponseEntity<ClienteDTO> update(@Positive @PathVariable Integer idCliente,
+    ResponseEntity<ClienteDTO> update(@Positive @PathVariable Integer idCliente,
                                              @RequestBody ClienteCreateDTO cliente) throws RegraDeNegocioException;
 
     @Operation(summary = "Deletar o cliente pelo ID", description = "Deleta o cliente informado pelo ID no banco")
@@ -109,7 +109,7 @@ public interface ClienteControllerDoc {
 
     )
     @GetMapping("/paginacao")
-    public Page<ClientePaginadoDTO> listarClientePaginado(@Positive Integer pagina,
-                                                          @Positive Integer quantidadeRegistros);
+    Page<ClientePaginadoDTO> listarClientePaginado(@Positive @RequestParam Integer pagina,
+                                                   @Positive @RequestParam Integer quantidadeRegistros);
 
 }

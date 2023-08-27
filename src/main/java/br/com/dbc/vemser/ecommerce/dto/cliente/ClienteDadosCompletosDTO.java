@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -18,16 +19,13 @@ public class ClienteDadosCompletosDTO {
 
     private String nome;
 
-
     private String telefone;
-
 
     private String email;
 
-
     private String cpf;
 
-    private Set<EnderecoDTO> enderecoEntities;
+    private List<EnderecoDTO> enderecoEntities;
 
-    private Set<PedidoDTO> pedidoEntities;
+    private List<PedidoDTO> pedidoEntities;
 }

@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -37,11 +39,11 @@ public class ClienteEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EnderecoEntity> enderecoEntities = new HashSet<>();
+    private List<EnderecoEntity> enderecoEntities = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PedidoEntity> pedidoEntities = new HashSet<>();
+    private List<PedidoEntity> pedidoEntities = new ArrayList<>();
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)

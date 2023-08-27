@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.List;
 
 @Data
@@ -14,12 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 public class PedidoDTO {
 
-
-    List<ProdutoEntity> produtos;
     private Integer idPedido;
     private Integer idCliente;
     private Double valor;
     private String statusPedido;
+    private List<ProdutoEntity> produtoEntities;
 
     private Integer quantidadeProdutos;
 

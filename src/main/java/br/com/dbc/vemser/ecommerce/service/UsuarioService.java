@@ -93,7 +93,6 @@ public class UsuarioService {
         Optional<UsuarioEntity> usuarioRecuperado = findByLogin(login);
         if (usuarioRecuperado.isEmpty()) throw new RegraDeNegocioException("Usuário não cadastrado!");
 
-        usuarioRecuperado.get().setCargos(new HashSet<>());
 
         usuarioRepository.save(usuarioRecuperado.get());
     }
