@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -69,6 +70,17 @@ public class PedidoEntity {
         this.quantidadeProdutos = this.produtoEntities.size();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PedidoEntity that = (PedidoEntity) o;
+        return Objects.equals(idPedido, that.idPedido) && Objects.equals(cliente, that.cliente) && Objects.equals(valor, that.valor) && Objects.equals(statusPedido, that.statusPedido) && Objects.equals(produtoEntities, that.produtoEntities) && Objects.equals(quantidadeProdutos, that.quantidadeProdutos);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(idPedido, cliente, valor, statusPedido, produtoEntities, quantidadeProdutos);
+    }
 }
 

@@ -94,7 +94,7 @@ public class PedidoService {
         pedido.setCliente(cliente);
 
 
-        PedidoDTO pedidoOutputDTO = ConversorMapper.converter(pedidoRepository.save(pedido), PedidoDTO.class);
+        PedidoDTO pedidoOutputDTO = ConversorMapper.converterPedido(pedidoRepository.save(pedido));
 
         Historico historico = inserirHistorico("Inseriu um pedido para o cliente: " + idCliente + ".");
         historicoRepository.save(historico);
@@ -265,7 +265,9 @@ public class PedidoService {
 
         PedidoEntity save = pedidoRepository.save(pedidoEntity);
 
-        PedidoDTO pedidoDTO = objectMapper.convertValue(save, PedidoDTO.class);
+
+        PedidoDTO pedidoDTO = ConversorMapper.converterPedido(save);
+
 
         String msg = "Atualizou o status do pedido: " + idPedido +  ".";
         Historico historico = inserirHistorico(msg);
