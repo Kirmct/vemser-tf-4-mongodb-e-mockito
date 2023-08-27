@@ -132,6 +132,15 @@ public class PedidoService {
         return pedidoRepository.relatorioPedido();
     }
 
+    private PedidoDTO converterPedidooParaDTO(PedidoEntity pedido) {
+
+        PedidoDTO pedidoDTO = objectMapper.convertValue(pedido, PedidoDTO.class);
+        pedidoDTO.setIdCliente(pedido.getCliente().getIdCliente());
+        pedidoDTO.setProdutoEntities(pedido.getProdutoEntities());
+
+        return pedidoDTO;
+    }
+
     public PedidoDTO buscarByIdPedido(Integer idPedido) throws RegraDeNegocioException {
 
 

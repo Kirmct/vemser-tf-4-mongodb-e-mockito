@@ -20,6 +20,7 @@ public class ConverterPedidoParaDTOutil {
     public PedidoDTO converterPedidooParaDTO(PedidoEntity pedido) {
 
         PedidoDTO pedidoDTO = objectMapper.convertValue(pedido, PedidoDTO.class);
+      
         pedidoDTO.setCliente(pedido.getCliente());
         pedidoDTO.setProdutoEntities(pedido.getProdutoEntities());
 

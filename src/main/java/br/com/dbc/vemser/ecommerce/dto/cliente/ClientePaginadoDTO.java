@@ -21,5 +21,4 @@ public class ClientePaginadoDTO {
 
     private String cpf;
 
-
 }

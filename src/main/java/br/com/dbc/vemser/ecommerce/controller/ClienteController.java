@@ -31,19 +31,20 @@ public class ClienteController implements ClienteControllerDoc {
 
     private final ClienteService clienteService;
 
-    @Override
+    @GetMapping("/clientes-dados-completos")
+
     public ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listarClientesComTodosOsDados(), HttpStatus.OK);
     }
 
-    @Override
+    @GetMapping
     public ResponseEntity<List<ClienteDTO>> findAll(@Positive @RequestParam(required = false) Integer idCliente) throws Exception {
         return new ResponseEntity<>(clienteService.findAll(idCliente), HttpStatus.OK);
     }
 
-    @Override
-    public Page<ClientePaginadoDTO> listarClientePaginado(@Positive Integer pagina,
-                                                          @Positive Integer quantidadeRegistros) {
+    @GetMapping("/paginacao")
+    public Page<ClientePaginadoDTO> listarClientePaginado(@Positive @RequestParam Integer pagina,
+                                                          @Positive @RequestParam Integer quantidadeRegistros) {
 
         Sort ordenacao = Sort.by("nome").and(Sort.by("cpf"));
 
@@ -52,22 +53,22 @@ public class ClienteController implements ClienteControllerDoc {
         return clienteService.clientePaginado(pageable);
     }
 
-    @Override
+    @GetMapping("/{idCliente}")
     public ResponseEntity<ClienteDTO> getById(@Positive @PathVariable Integer idCliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.getByid(idCliente), HttpStatus.OK);
     }
 
-    @Override
+    @PostMapping
     public ResponseEntity<ClienteDTO> save(@Validated @RequestBody ClienteCreateDTO cliente) throws RegraDeNegocioException, UniqueFieldExistsException {
         return new ResponseEntity<>(clienteService.save(cliente), HttpStatus.OK);
     }
 
-    @Override
+    @PutMapping("/{idCliente}")
     public ResponseEntity<ClienteDTO> update(@Positive @PathVariable Integer idCliente, @RequestBody ClienteCreateDTO cliente) throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.update(idCliente, cliente), HttpStatus.OK);
     }
 
-    @Override
+    @DeleteMapping("/{idCliente}")
     public ResponseEntity<Void> delete(@Positive @PathVariable Integer idCliente) {
         clienteService.delete(idCliente);
         return ResponseEntity.ok().build();

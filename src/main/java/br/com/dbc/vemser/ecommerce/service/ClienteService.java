@@ -47,8 +47,20 @@ public class ClienteService {
     private final PasswordEncoder bCript;
     private final HistoricoRepository historicoRepository;
 
-    private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
-    private final ConverterPedidoParaDTOutil converterPedidoParaDTOutil;
+    @SneakyThrows
+    private UsuarioEntity getUsuarioByToken() {
+        return usuarioRepository.findById(usuarioService.getIdLoggedUser()).orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado."));
+    }
+
+    private void addLog(UsuarioEntity usuario, String acao) {
+        Historico historico = new Historico();
+        historico.setUsuario(usuario.getLogin());
+        historico.setCargo(Cargo.valueOf(usuario.getCargos().get(0).getNome()));
+        historico.setAcao(acao);
+        historico.setDataAcao(LocalDateTime.now());
+
+        historicoRepository.save(historico);
+    }
 
     @SneakyThrows
     private UsuarioEntity getUsuarioByToken() {
@@ -82,11 +94,11 @@ public class ClienteService {
     }
 
     public ClienteDTO save(ClienteCreateDTO clienteCreateDTO) throws UniqueFieldExistsException, RegraDeNegocioException {
-//        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
-//
-//        if (campo.size() != 0) {
-//            throw new UniqueFieldExistsException(campo);
-//        }
+        Map<String, String> campo = validarNovoCliente(clienteCreateDTO);
+
+        if (campo.size() != 0) {
+            throw new UniqueFieldExistsException(campo);
+        }
 
         UsuarioEntity user = new UsuarioEntity();
         String senhaCript = bCript.encode(clienteCreateDTO.getSenha());
@@ -94,7 +106,7 @@ public class ClienteService {
         user.setSenha(senhaCript);
         user.setLogin(clienteCreateDTO.getEmail());
 
-        Optional<CargoEntity> userCargo = cargoRepository.findByNome("ROLE_USUARIO");
+        Optional<CargoEntity> userCargo = cargoRepository.findById(2);
 
         if (userCargo.isEmpty()){
             throw new RegraDeNegocioException("Cargo não existe");
@@ -103,10 +115,10 @@ public class ClienteService {
         user.getCargos().add(userCargo.get());
         UsuarioEntity novoUser = usuarioRepository.save(user);
 
-        ClienteEntity cliente = objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
+        ClienteEntity cliente = ConversorMapper.converter(clienteCreateDTO, ClienteEntity.class);
         cliente.setUsuario(novoUser);
-//
-        ClienteDTO clienteDTO =  ConversorMapper.converter(clienteRepository.save((cliente)), ClienteDTO.class);
+
+        ClienteDTO clienteDTO = ConversorMapper.converter(clienteRepository.save((cliente)), ClienteDTO.class);
 
         clienteDTO.setIdUsuario(novoUser.getIdUsuario());
 
@@ -117,17 +129,37 @@ public class ClienteService {
 
     public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
         addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
-        return clienteRepository.findAll()
-                .stream().map(this::converterClienteParaDTO).toList();
 
+        return clienteRepository.findAll()
+                .stream().map(cliente -> {
+                    ClienteDadosCompletosDTO clienteConvertido = ConversorMapper.converter(cliente, ClienteDadosCompletosDTO.class);
+
+                    clienteConvertido.setPedidoEntities(cliente.getPedidoEntities()
+                            .stream()
+                            .map(pedido -> ConversorMapper.converter(pedido, PedidoDTO.class)).toList());
+
+                    clienteConvertido.setEnderecoEntities(cliente.getEnderecoEntities().stream().map(endereco -> {
+                        EnderecoDTO enderecoConvertdo = ConversorMapper.converter(endereco, EnderecoDTO.class);
+                        enderecoConvertdo.setIdCliente(endereco.getCliente().getIdCliente());
+                        return enderecoConvertdo;
+                    }).toList());
+
+                    return clienteConvertido;
+                }).toList();
     }
 
     public List<ClienteDTO> findAll(Integer idCliente) {
-        addLog(getUsuarioByToken(), "Listou todos os clientes.");
-        return clienteRepository.buscarTodosOptionalId(idCliente)
+        List<ClienteDTO> clientesConvertidos = clienteRepository.buscarTodosOptionalId(idCliente)
                 .stream()
-                .map(this::convertToDto)
+                .map(cliente -> {
+                    ClienteDTO clienteDTO = ConversorMapper.converter(cliente, ClienteDTO.class);
+                    clienteDTO.setIdUsuario(cliente.getUsuario().getIdUsuario());
+                    return clienteDTO;
+                })
                 .collect(Collectors.toList());
+
+        addLog(getUsuarioByToken(), "Listou todos os clientes.");
+        return clientesConvertidos;
     }
 
     public Page<ClientePaginadoDTO> clientePaginado(Pageable pageable) {
@@ -136,7 +168,10 @@ public class ClienteService {
     }
 
     public ClienteDTO getByid(Integer idCliente) throws RegraDeNegocioException {
-        ClienteDTO clienteDTO = convertToDto(findById(idCliente));
+        ClienteEntity clienteBuscado = findById(idCliente);
+        ClienteDTO clienteDTO = ConversorMapper.converter(clienteBuscado, ClienteDTO.class);
+        clienteDTO.setIdUsuario(clienteBuscado.getUsuario().getIdUsuario());
+
         addLog(getUsuarioByToken(), "Buscou um cliente pelo ID.");
         return clienteDTO;
     }
@@ -147,7 +182,10 @@ public class ClienteService {
         findedClient.setNome(clienteCreateDTO.getNome());
         findedClient.setTelefone(clienteCreateDTO.getTelefone());
         findedClient.setEmail(clienteCreateDTO.getEmail());
-        ClienteDTO updatedClient = convertToDto(clienteRepository.save(findedClient));
+
+        findedClient = clienteRepository.save(findedClient);
+        ClienteDTO updatedClient = ConversorMapper.converter(findedClient, ClienteDTO.class);
+        updatedClient.setIdUsuario(findedClient.getUsuario().getIdUsuario());
 
         addLog(getUsuarioByToken(), "Fez um update em " + findedClient.getNome() + ".");
         return updatedClient;
@@ -165,33 +203,4 @@ public class ClienteService {
         return clienteRepository.findById(idcliente).orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado"));
     }
 
-    public ClienteDTO convertToDto(ClienteEntity clienteEntity) {
-        ClienteDTO clienteDTO = objectMapper.convertValue(clienteEntity, ClienteDTO.class);
-        clienteDTO.setIdUsuario(clienteEntity.getUsuario().getIdUsuario());
-        return clienteDTO;
-    }
-
-    public ClienteEntity convertToEntity(ClienteCreateDTO clienteCreateDTO) {
-        return objectMapper.convertValue(clienteCreateDTO, ClienteEntity.class);
-    }
-
-    private ClienteDadosCompletosDTO converterClienteParaDTO(ClienteEntity clienteEntity) {
-
-        Set<EnderecoDTO> enderecoDTO = clienteEntity.getEnderecoEntities()
-                .stream().map(converterEnderecoParaDTOutil::converterByEnderecoDTO)
-                .collect(Collectors.toSet());
-
-        Set<PedidoDTO> pedidoDTO = clienteEntity.getPedidoEntities()
-                .stream().map(c -> converterPedidoParaDTOutil.converterPedidooParaDTO(c))
-                .collect(Collectors.toSet());
-
-
-        ClienteDadosCompletosDTO clienteDadosCompletosDTO =
-                objectMapper.convertValue(clienteEntity, ClienteDadosCompletosDTO.class);
-
-        clienteDadosCompletosDTO.setEnderecoEntities(enderecoDTO);
-        clienteDadosCompletosDTO.setPedidoEntities(pedidoDTO);
-
-        return clienteDadosCompletosDTO;
-    }
 }
