@@ -8,9 +8,7 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +19,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -65,7 +65,6 @@ class HistoricoServiceTest {
         usuarioEntity.setIdUsuario(1);
         usuarioEntity.setLogin(LOGIN);
         usuarioEntity.setSenha(SENHA);
-        usuarioEntity.setCargos(new HashSet<>(Arrays.asList(cargoEntity)));
 
         Historico historico = new Historico();
         historico.setId("1");

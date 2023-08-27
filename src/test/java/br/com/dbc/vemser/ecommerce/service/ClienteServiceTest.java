@@ -13,7 +13,6 @@ import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
-import br.com.dbc.vemser.ecommerce.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +25,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -100,7 +101,7 @@ class ClienteServiceTest {
                 bCript.encode(clienteDTOCriado.getSenha()),
                 null);
 
-        usuario.setCargos(List.of(cargo));
+        usuario.setCargos(Set.of(cargo));
         cargo.setUsuarios(List.of(usuario));
 
         clienteMockado = new ClienteEntity(

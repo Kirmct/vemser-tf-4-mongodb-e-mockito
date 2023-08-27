@@ -3,7 +3,6 @@ package br.com.dbc.vemser.ecommerce.service;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoRelatorioDTO;
-import br.com.dbc.vemser.ecommerce.entity.PedidoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoEntity;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoSetor;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoTamanho;
@@ -13,14 +12,12 @@ import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

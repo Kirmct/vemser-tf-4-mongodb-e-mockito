@@ -69,8 +69,6 @@ class EnderecoServiceTest {
         usuarioEntity.setIdUsuario(1);
         usuarioEntity.setLogin(LOGIN);
         usuarioEntity.setSenha(SENHA);
-        usuarioEntity.setCargos(new HashSet<>(Arrays.asList(cargoEntity)));
-
     }
 
     @BeforeEach

@@ -23,7 +23,6 @@ public class PedidoDTO {
     private Double valor;
 
     private String statusPedido;
-    private List<ProdutoEntity> produtoEntities;
 
     @JsonProperty("produtos")
     List<ProdutoEntity> produtoEntities;
