@@ -62,21 +62,6 @@ public class ClienteService {
         historicoRepository.save(historico);
     }
 
-    @SneakyThrows
-    private UsuarioEntity getUsuarioByToken() {
-        return usuarioRepository.findById(usuarioService.getIdLoggedUser()).orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado."));
-    }
-
-    private void addLog(UsuarioEntity usuario, String acao) {
-        Historico historico = new Historico();
-        historico.setUsuario(usuario.getLogin());
-        historico.setCargo(Cargo.valueOf(getUsuarioByToken().getCargos().stream().findFirst().orElseThrow().getNome()));
-        historico.setAcao(acao);
-        historico.setDataAcao(LocalDateTime.now());
-
-        historicoRepository.save(historico);
-    }
-
     public Map<String, String> validarNovoCliente(ClienteCreateDTO clienteCreateDTO) {
         Map<String, String> existe = new HashMap<>();
 
