@@ -62,6 +62,21 @@ public class ClienteService {
         historicoRepository.save(historico);
     }
 
+    @SneakyThrows
+    private UsuarioEntity getUsuarioByToken() {
+        return usuarioRepository.findById(usuarioService.getIdLoggedUser()).orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado."));
+    }
+
+    private void addLog(UsuarioEntity usuario, String acao) {
+        Historico historico = new Historico();
+        historico.setUsuario(usuario.getLogin());
+        historico.setCargo(Cargo.valueOf(getUsuarioByToken().getCargos().stream().findFirst().orElseThrow().getNome()));
+        historico.setAcao(acao);
+        historico.setDataAcao(LocalDateTime.now());
+
+        historicoRepository.save(historico);
+    }
+
     public Map<String, String> validarNovoCliente(ClienteCreateDTO clienteCreateDTO) {
         Map<String, String> existe = new HashMap<>();
 
@@ -113,7 +128,8 @@ public class ClienteService {
     }
 
     public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
-//        addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
+        addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
+
         return clienteRepository.findAll()
                 .stream().map(cliente -> {
                     ClienteDadosCompletosDTO clienteConvertido = ConversorMapper.converter(cliente, ClienteDadosCompletosDTO.class);
@@ -155,6 +171,7 @@ public class ClienteService {
         ClienteEntity clienteBuscado = findById(idCliente);
         ClienteDTO clienteDTO = ConversorMapper.converter(clienteBuscado, ClienteDTO.class);
         clienteDTO.setIdUsuario(clienteBuscado.getUsuario().getIdUsuario());
+
         addLog(getUsuarioByToken(), "Buscou um cliente pelo ID.");
         return clienteDTO;
     }
@@ -169,6 +186,7 @@ public class ClienteService {
         findedClient = clienteRepository.save(findedClient);
         ClienteDTO updatedClient = ConversorMapper.converter(findedClient, ClienteDTO.class);
         updatedClient.setIdUsuario(findedClient.getUsuario().getIdUsuario());
+
         addLog(getUsuarioByToken(), "Fez um update em " + findedClient.getNome() + ".");
         return updatedClient;
     }

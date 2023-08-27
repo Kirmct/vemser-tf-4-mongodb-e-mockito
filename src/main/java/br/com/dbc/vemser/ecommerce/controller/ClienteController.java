@@ -32,6 +32,7 @@ public class ClienteController implements ClienteControllerDoc {
     private final ClienteService clienteService;
 
     @GetMapping("/clientes-dados-completos")
+
     public ResponseEntity<List<ClienteDadosCompletosDTO>> buscarClientesDadosCompletos() throws RegraDeNegocioException {
         return new ResponseEntity<>(clienteService.listarClientesComTodosOsDados(), HttpStatus.OK);
     }
