@@ -3,7 +3,7 @@ package br.com.dbc.vemser.ecommerce.controller;
 import br.com.dbc.vemser.ecommerce.doc.EnderecoControllerDoc;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoUpdateDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.EnderecoService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +51,8 @@ public class EnderecoController implements EnderecoControllerDoc {
 
     @PutMapping("/{idEndereco}")
     public ResponseEntity<EnderecoDTO> update(@Positive(message = "id deve ser maior que zero") @PathVariable("idEndereco") Integer idEndereco,
-                                              @Valid @RequestBody EnderecoUpdateDTO enderecoUpdateDTO) throws Exception {
-        return new ResponseEntity<>(enderecoService.update(idEndereco, enderecoUpdateDTO), HttpStatus.OK);
+                                              @Valid @RequestBody EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException {
+        return new ResponseEntity<>(enderecoService.update(idEndereco, enderecoCreateDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/{idEndereco}")

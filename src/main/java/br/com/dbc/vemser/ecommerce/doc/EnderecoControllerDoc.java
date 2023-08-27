@@ -3,7 +3,7 @@ package br.com.dbc.vemser.ecommerce.doc;
 
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoUpdateDTO;
+import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -80,7 +80,7 @@ public interface EnderecoControllerDoc {
     )
     @PutMapping("/{idEndereco}")
     ResponseEntity<EnderecoDTO> update(@Positive(message = "id deve ser maior que zero") @PathVariable("idEndereco") Integer idEndereco,
-                                       @Valid @RequestBody EnderecoUpdateDTO enderecoUpdateDTO) throws Exception;
+                                       @Valid @RequestBody EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException;
 
     @Operation(summary = "Deletar endereço por ID", description = "Deleta o endereço selecionado pelo ID")
     @ApiResponses(
