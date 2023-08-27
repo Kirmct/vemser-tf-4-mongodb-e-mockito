@@ -22,6 +22,7 @@ public class HistoricoService {
     private final ObjectMapper objectMapper;
 
     public List<HistoricoDTO> findAll(){
+
         return convertToDTOList(historicoRepository.findAll());
     }
 

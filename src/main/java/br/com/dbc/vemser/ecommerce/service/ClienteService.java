@@ -6,21 +6,18 @@ import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDadosCompletosDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClientePaginadoDTO;
 import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
-import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
-import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
+import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
-import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
-import br.com.dbc.vemser.ecommerce.utils.ConverterPedidoParaDTOutil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,11 +26,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -55,7 +53,7 @@ public class ClienteService {
     private void addLog(UsuarioEntity usuario, String acao) {
         Historico historico = new Historico();
         historico.setUsuario(usuario.getLogin());
-        historico.setCargo(Cargo.valueOf(usuario.getCargos().get(0).getNome()));
+        historico.setCargo(Cargo.valueOf(usuario.getCargos().stream().findFirst().orElseThrow().getNome()));
         historico.setAcao(acao);
         historico.setDataAcao(LocalDateTime.now());
 
@@ -114,6 +112,7 @@ public class ClienteService {
 
     public List<ClienteDadosCompletosDTO> listarClientesComTodosOsDados() throws RegraDeNegocioException {
         addLog(getUsuarioByToken(), "Listou os clientes com todos os dados.");
+
         return clienteRepository.findAll()
                 .stream().map(cliente -> {
                     ClienteDadosCompletosDTO clienteConvertido = ConversorMapper.converter(cliente, ClienteDadosCompletosDTO.class);
@@ -155,6 +154,7 @@ public class ClienteService {
         ClienteEntity clienteBuscado = findById(idCliente);
         ClienteDTO clienteDTO = ConversorMapper.converter(clienteBuscado, ClienteDTO.class);
         clienteDTO.setIdUsuario(clienteBuscado.getUsuario().getIdUsuario());
+
         addLog(getUsuarioByToken(), "Buscou um cliente pelo ID.");
         return clienteDTO;
     }
@@ -169,6 +169,7 @@ public class ClienteService {
         findedClient = clienteRepository.save(findedClient);
         ClienteDTO updatedClient = ConversorMapper.converter(findedClient, ClienteDTO.class);
         updatedClient.setIdUsuario(findedClient.getUsuario().getIdUsuario());
+
         addLog(getUsuarioByToken(), "Fez um update em " + findedClient.getNome() + ".");
         return updatedClient;
     }

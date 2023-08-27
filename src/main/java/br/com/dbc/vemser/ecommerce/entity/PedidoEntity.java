@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -24,7 +25,7 @@ public class PedidoEntity {
     private Integer idPedido;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_cliente", referencedColumnName = "id_cliente")
     private ClienteEntity cliente;
 
@@ -35,7 +36,8 @@ public class PedidoEntity {
     private String statusPedido;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "Pedido_X_Produto",
             joinColumns = @JoinColumn(name = "id_pedido"),
             inverseJoinColumns = @JoinColumn(name = "id_produto")
@@ -68,6 +70,17 @@ public class PedidoEntity {
         this.quantidadeProdutos = this.produtoEntities.size();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PedidoEntity that = (PedidoEntity) o;
+        return Objects.equals(idPedido, that.idPedido) && Objects.equals(cliente, that.cliente) && Objects.equals(valor, that.valor) && Objects.equals(statusPedido, that.statusPedido) && Objects.equals(produtoEntities, that.produtoEntities) && Objects.equals(quantidadeProdutos, that.quantidadeProdutos);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(idPedido, cliente, valor, statusPedido, produtoEntities, quantidadeProdutos);
+    }
 }
 

@@ -38,7 +38,7 @@ public class UsuarioEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "ID_USUARIO"),
             inverseJoinColumns = @JoinColumn(name = "ID_CARGO")
     )
-    private List<CargoEntity> cargos = new ArrayList<>();
+    private Set<CargoEntity> cargos = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
