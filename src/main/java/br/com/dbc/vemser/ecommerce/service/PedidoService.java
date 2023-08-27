@@ -16,6 +16,7 @@ import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.PedidoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
+import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -92,8 +94,7 @@ public class PedidoService {
         pedido.setCliente(cliente);
 
 
-        PedidoDTO pedidoOutputDTO = converterPedidooParaDTO(pedidoRepository.save(
-                pedido));
+        PedidoDTO pedidoOutputDTO = ConversorMapper.converterPedido(pedidoRepository.save(pedido));
 
         Historico historico = inserirHistorico("Inseriu um pedido para o cliente: " + idCliente + ".");
         historicoRepository.save(historico);
@@ -107,8 +108,10 @@ public class PedidoService {
         Historico historico = inserirHistorico("Listou os pedidos.");
         historicoRepository.save(historico);
 
+        List<PedidoDTO> pedidoDTOS = new ArrayList<>();
+
         return pedidoRepository.findAll().stream()
-                .map(p -> converterPedidooParaDTO(p)).toList();
+                .map(p -> ConversorMapper.converterPedido(p)).toList();
 
     }
 
@@ -129,19 +132,11 @@ public class PedidoService {
         return pedidoRepository.relatorioPedido();
     }
 
-    private PedidoDTO converterPedidooParaDTO(PedidoEntity pedido) {
-
-        PedidoDTO pedidoDTO = objectMapper.convertValue(pedido, PedidoDTO.class);
-        pedidoDTO.setIdCliente(pedido.getCliente().getIdCliente());
-        pedidoDTO.setProdutos(pedido.getProdutoEntities());
-
-        return pedidoDTO;
-    }
-
     public PedidoDTO buscarByIdPedido(Integer idPedido) throws RegraDeNegocioException {
 
 
         Optional<PedidoEntity> pedidoEntityOP = pedidoRepository.findById(idPedido);
+
         if (pedidoEntityOP.isEmpty()){
             Historico historico = inserirHistorico("Buscou por um pedido inválido: " + idPedido + ".");
             historicoRepository.save(historico);
@@ -153,8 +148,9 @@ public class PedidoService {
         Historico historico = inserirHistorico("Buscou pelo pedido: " + idPedido + ".");
         historicoRepository.save(historico);
 
+        PedidoDTO pedidoDTO = ConversorMapper.converterPedido(pedidoEntity);
 
-        return converterPedidooParaDTO(pedidoEntity);
+        return pedidoDTO;
 
     }
 
@@ -269,7 +265,9 @@ public class PedidoService {
 
         PedidoEntity save = pedidoRepository.save(pedidoEntity);
 
-        PedidoDTO pedidoDTO = objectMapper.convertValue(save, PedidoDTO.class);
+
+        PedidoDTO pedidoDTO = ConversorMapper.converterPedido(save);
+
 
         String msg = "Atualizou o status do pedido: " + idPedido +  ".";
         Historico historico = inserirHistorico(msg);
