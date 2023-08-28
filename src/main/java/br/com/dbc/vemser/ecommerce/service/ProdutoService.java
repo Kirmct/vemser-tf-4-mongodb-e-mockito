@@ -5,13 +5,9 @@ import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoEntityDTO;
 import br.com.dbc.vemser.ecommerce.dto.produto.ProdutoRelatorioDTO;
-import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
-import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoEntity;
-import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
-import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
@@ -20,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -158,7 +153,7 @@ public class ProdutoService {
         ProdutoEntity produtoEntity = ConversorMapper.converter(produtoCreateDTO, ProdutoEntity.class);
 
         ProdutoEntity produtoEntityAtualizado = produtoRepository.save(produtoEntity);
-
+        addLog("Atualizou um novo produto. Modelo: " + produtoCreateDTO.getModelo() + ".");
         return ConversorMapper.converter(produtoEntityAtualizado, ProdutoDTO.class);
     }
 

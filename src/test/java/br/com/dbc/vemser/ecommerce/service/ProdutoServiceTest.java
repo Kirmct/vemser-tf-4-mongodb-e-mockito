@@ -9,6 +9,7 @@ import br.com.dbc.vemser.ecommerce.entity.enums.TipoTamanho;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
+import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,9 @@ public class ProdutoServiceTest {
     @Mock
     private ProdutoRepository produtoRepository;
 
+    @Mock
+    private HistoricoBuilder historicoBuilder;
+
     private ProdutoEntity produto;
     private ProdutoEntity produto1;
     private ProdutoEntity produto2;
@@ -44,7 +48,7 @@ public class ProdutoServiceTest {
     private List<ProdutoEntity> produtosList = new ArrayList<>();
 
     @BeforeEach
-    void setUp() throws RegraDeNegocioException {
+    void setUp() {
         produto = new ProdutoEntity();
         produto.setIdProduto(1);
         produto.setModelo("Camiseta Estampada");
@@ -214,7 +218,7 @@ public class ProdutoServiceTest {
     }
 
     @Test
-    public void deveTestarIdNaoEncontrado() throws RegraDeNegocioException{
+    public void deveTestarIdNaoEncontrado() {
         Integer id = 10000;
 
         assertThrows(RegraDeNegocioException.class, () -> {
