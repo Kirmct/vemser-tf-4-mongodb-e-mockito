@@ -9,6 +9,7 @@ import br.com.dbc.vemser.ecommerce.entity.enums.TipoSetor;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoTamanho;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.*;
+import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -31,6 +31,9 @@ class PedidoServiceTest {
     private PedidoService pedidoService;
 
     //ARRANGE
+
+    @Mock
+    private HistoricoBuilder historicoBuilder;
     @Mock
     private PedidoRepository pedidoRepository;
 
@@ -65,13 +68,6 @@ class PedidoServiceTest {
     @BeforeEach
     void setUp() throws RegraDeNegocioException {
         startPedido();
-        UsuarioLogadoDTO usuarioLogadoDTO = new UsuarioLogadoDTO();
-        usuarioLogadoDTO.setIdUsuario(1);
-        usuarioLogadoDTO.setLogin("Jõao");
-        usuarioLogadoDTO.setEnabled(true);
-
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioLogadoDTO);
-        when(usuarioService.findByRole(any())).thenReturn("ROLE_VISITANTE");
     }
 
     @Test
@@ -209,6 +205,16 @@ class PedidoServiceTest {
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(result.getStatusPedido(), "S");
+    }
+
+    @Test
+    public void testeAtualizarStatusPedidoComErro() throws RegraDeNegocioException{
+        Integer id = 1000;
+
+        assertThrows(RegraDeNegocioException.class, () -> {
+            pedidoService.buscarByIdPedido(id);
+        });
+
     }
 
 

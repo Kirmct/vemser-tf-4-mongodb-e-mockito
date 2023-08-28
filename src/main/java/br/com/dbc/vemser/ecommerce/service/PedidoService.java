@@ -11,8 +11,10 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.*;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
+import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,37 +42,25 @@ public class PedidoService {
     private final FinanceiroRepository financeiroRepository;
     private final ProdutoMongoRepository produtoMongoRepository;
 
+    private final HistoricoBuilder historicoBuilder;
+
+    @SneakyThrows
+    private void addLog(String mensagem) {
+        historicoBuilder.inserirHistorico(mensagem, Setor.PEDIDO);
+    }
+
     private static void validacaoPedidoFinalizado(PedidoEntity pedidoAchado) throws RegraDeNegocioException {
         if (pedidoAchado.getStatusPedido().equalsIgnoreCase("S"))
             throw new RegraDeNegocioException("Pedido finalizado!");
     }
 
-    private Historico inserirHistorico(String msg) throws RegraDeNegocioException {
-        UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
-
-        Historico historico = new Historico();
-
-        if (usuarioLogadoDTO.getIdUsuario() != null){
-            Integer idUsuario = usuarioService.getIdLoggedUser();
-            String cargo = usuarioService.findByRole(idUsuario);
-            historico.setCargo(Cargo.valueOf(cargo));
-            historico.setUsuario(usuarioLogadoDTO.getLogin());
-        }else {
-            historico.setCargo(Cargo.ROLE_VISITANTE);
-            historico.setUsuario("Visitante");
-        }
-        historico.setAcao(msg);
-        historico.setSetor(Setor.PEDIDO);
-        historico.setDataAcao(LocalDateTime.now());
-        return historico;
-    }
 
     public PedidoDTO criarPedido(Integer idCliente, PedidoCreateDTO idProduto) throws RegraDeNegocioException {
 
         Optional<ClienteEntity> clienteOP = clienteRepository.findById(idCliente);
         if (clienteOP.isEmpty()){
-            Historico historico = inserirHistorico("Tentou criar um pedido para um cliente invalido: " + idCliente + ".");
-            historicoRepository.save(historico);
+            addLog("Tentou criar um pedido para um cliente invalido: " + idCliente + ".");
+
             throw new RegraDeNegocioException("Cliente não encontrado.");
         }
 
@@ -78,8 +68,8 @@ public class PedidoService {
 
         Optional<ProdutoEntity> produtoEntityBuscadoOP = produtoRepository.findById(idProduto.getIdProduto());
         if (produtoEntityBuscadoOP.isEmpty()){
-            Historico historico = inserirHistorico("Tentou criar um pedido passando um produto inválido: " + idProduto.getIdProduto() + ".");
-            historicoRepository.save(historico);
+            addLog("Tentou criar um pedido passando um produto inválido: " + idProduto.getIdProduto() + ".");
+
             throw new RegraDeNegocioException("Produto não encontrado.");
         }
 
@@ -94,8 +84,8 @@ public class PedidoService {
 
         PedidoDTO pedidoOutputDTO = ConversorMapper.converterPedido(pedidoRepository.save(pedido));
 
-        Historico historico = inserirHistorico("Inseriu um pedido para o cliente: " + idCliente + ".");
-        historicoRepository.save(historico);
+        addLog("Inseriu um pedido para o cliente: " + idCliente + ".");
+
 
         return pedidoOutputDTO;
     }
@@ -103,8 +93,8 @@ public class PedidoService {
     public List<PedidoDTO> listar() throws RegraDeNegocioException {
 
 
-        Historico historico = inserirHistorico("Listou os pedidos.");
-        historicoRepository.save(historico);
+        addLog("Listou os pedidos.");
+
 
         List<PedidoDTO> pedidoDTOS = new ArrayList<>();
 
@@ -115,8 +105,8 @@ public class PedidoService {
 
     public Page<RelatorioPedidoDTO> listarRelatorioPaginado(Pageable pageable) throws RegraDeNegocioException {
 
-        Historico historico = inserirHistorico("Fez um relatório paginado de pedidos.");
-        historicoRepository.save(historico);
+        addLog("Fez um relatório paginado de pedidos.");
+
 
         return pedidoRepository.buscarTodosRelatoriosPedidosPaginacao(pageable);
 
@@ -124,8 +114,8 @@ public class PedidoService {
 
     public List<RelatorioPedidoDTO> relatorioPedido() throws RegraDeNegocioException {
 
-        Historico historico = inserirHistorico("Fez um relatório de pedidos.");
-        historicoRepository.save(historico);
+        addLog("Fez um relatório de pedidos.");
+
 
         return pedidoRepository.relatorioPedido();
     }
@@ -136,15 +126,15 @@ public class PedidoService {
         Optional<PedidoEntity> pedidoEntityOP = pedidoRepository.findById(idPedido);
 
         if (pedidoEntityOP.isEmpty()){
-            Historico historico = inserirHistorico("Buscou por um pedido inválido: " + idPedido + ".");
-            historicoRepository.save(historico);
+            addLog("Buscou por um pedido inválido: " + idPedido + ".");
+
             throw new RegraDeNegocioException("Pedido nao encontrado!");
         }
 
         PedidoEntity pedidoEntity = pedidoEntityOP.get();
 
-        Historico historico = inserirHistorico("Buscou pelo pedido: " + idPedido + ".");
-        historicoRepository.save(historico);
+        addLog("Buscou pelo pedido: " + idPedido + ".");
+
 
         PedidoDTO pedidoDTO = ConversorMapper.converterPedido(pedidoEntity);
 
@@ -157,8 +147,8 @@ public class PedidoService {
         Optional<PedidoEntity> pedidoAchadoOP = pedidoRepository.findById(idPedido);
 
         if (pedidoAchadoOP.isEmpty()){
-            Historico historico = inserirHistorico("Buscou por um pedido inválido: " + idPedido + ".");
-            historicoRepository.save(historico);
+            addLog("Buscou por um pedido inválido: " + idPedido + ".");
+
             throw new RegraDeNegocioException("Pedido nao encontrado!");
         }
         PedidoEntity pedidoAchado = pedidoAchadoOP.get();
@@ -167,8 +157,8 @@ public class PedidoService {
 
         Optional<ProdutoEntity> produtoEntityBuscadoOP = produtoRepository.findById(idProduto);
         if (produtoEntityBuscadoOP.isEmpty()){
-            Historico historico = inserirHistorico("Tentou inserir um produto inválido: " + idProduto + ". Ao pedido: " + idPedido);
-            historicoRepository.save(historico);
+            addLog("Tentou inserir um produto inválido: " + idProduto + ". Ao pedido: " + idPedido);
+
             throw new RegraDeNegocioException("Produto nao encontrado!");
         }
 
@@ -180,8 +170,8 @@ public class PedidoService {
         pedidoRepository.save(pedidoAchado);
 
         String msg = "Adicionou o produto: " + produtoEntityBuscado.getIdProduto() + ". Ao pedido: " + pedidoAchado.getIdPedido() + ".";
-        Historico historico = inserirHistorico(msg);
-        historicoRepository.save(historico);
+        addLog(msg);
+
 
         return null;
 
@@ -191,8 +181,8 @@ public class PedidoService {
 
         PedidoEntity pedidoAchado = pedidoRepository.getById(idPedido);
         if (pedidoAchado == null){
-            Historico historico = inserirHistorico("Tentou remover de um pedido inválido: " + idPedido + ".");
-            historicoRepository.save(historico);
+            addLog("Tentou remover de um pedido inválido: " + idPedido + ".");
+
             throw new RegraDeNegocioException("Pedido não encontrado!");
         }
 
@@ -200,8 +190,8 @@ public class PedidoService {
 
         ProdutoEntity produtoEntityBuscado = produtoRepository.findByIdProduto(idProduto);
         if (produtoEntityBuscado == null) {
-            Historico historico = inserirHistorico("Tentou remover um produto inválido: " + idProduto + ". Do pedido: " + idPedido);
-            historicoRepository.save(historico);
+            addLog("Tentou remover um produto inválido: " + idProduto + ". Do pedido: " + idPedido);
+
             throw new RegraDeNegocioException("Produto não encontrado!");
         }
 
@@ -210,8 +200,8 @@ public class PedidoService {
         pedidoRepository.save(pedidoAchado);
 
         String msg = "Removeu o produto: " + produtoEntityBuscado.getIdProduto() + ". Do pedido: " + pedidoAchado.getIdPedido() + ".";
-        Historico historico = inserirHistorico(msg);
-        historicoRepository.save(historico);
+        addLog(msg);
+
 
         return null;
 
@@ -223,8 +213,8 @@ public class PedidoService {
 
         Optional<PedidoEntity> pedidoEntityOP = pedidoRepository.findById(idPedido);
         if (pedidoEntityOP.isEmpty()){
-            Historico historico = inserirHistorico("Tentou remover de um pedido inválido: " + idPedido + ".");
-            historicoRepository.save(historico);
+            addLog("Tentou remover de um pedido inválido: " + idPedido + ".");
+
             throw new RegraDeNegocioException("Pedido não encontrado!");
         }
 
@@ -236,8 +226,8 @@ public class PedidoService {
         pedidoRepository.delete(pedidoEntity);
 
         String msg = "Deletou o pedido: " + idPedido +  ".";
-        Historico historico = inserirHistorico(msg);
-        historicoRepository.save(historico);
+        addLog(msg);
+
 
     }
 
@@ -245,8 +235,8 @@ public class PedidoService {
 
         Optional<PedidoEntity> pedidoEntityOP = pedidoRepository.findById(idPedido);
         if (pedidoEntityOP.isEmpty()){
-            Historico historico = inserirHistorico("Tentou atualizar um pedido inválido: " + idPedido + ".");
-            historicoRepository.save(historico);
+            addLog("Tentou atualizar um pedido inválido: " + idPedido + ".");
+
             throw new RegraDeNegocioException("Pedido não encontrado!");
         }
 
@@ -268,8 +258,8 @@ public class PedidoService {
 
 
         String msg = "Atualizou o status do pedido: " + idPedido +  ".";
-        Historico historico = inserirHistorico(msg);
-        historicoRepository.save(historico);
+        addLog(msg);
+
 
         addFinanceiro(pedidoDTO);
 
