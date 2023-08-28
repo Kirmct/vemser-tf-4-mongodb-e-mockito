@@ -110,7 +110,7 @@ public interface ClienteControllerDoc {
 
     )
     @GetMapping("/paginacao")
-    Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero @RequestParam Integer pagina,
+    Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero(message = "O número da página deve ser maior ou igual a 0") @RequestParam Integer pagina,
                                                    @Positive @RequestParam Integer quantidadeRegistros);
 
 }

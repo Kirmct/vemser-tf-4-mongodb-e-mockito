@@ -44,7 +44,7 @@ public class ClienteController implements ClienteControllerDoc {
     }
 
     @GetMapping("/paginacao")
-    public Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero @RequestParam Integer pagina,
+    public Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero(message = "O número da página deve ser maior ou igual a 0")  @RequestParam Integer pagina,
                                                           @Positive @RequestParam Integer quantidadeRegistros) {
 
         Sort ordenacao = Sort.by("nome").and(Sort.by("cpf"));
