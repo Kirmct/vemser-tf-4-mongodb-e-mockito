@@ -2,6 +2,7 @@ package br.com.dbc.vemser.ecommerce.service;
 
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
+import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoPaginacaoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.RelatorioPedidoDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.*;
@@ -17,6 +18,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
@@ -208,13 +214,35 @@ class PedidoServiceTest {
     }
 
     @Test
-    public void testeAtualizarStatusPedidoComErro() throws RegraDeNegocioException{
+    public void testeAtualizarStatusPedidoComErro(){
         Integer id = 1000;
 
         assertThrows(RegraDeNegocioException.class, () -> {
             pedidoService.buscarByIdPedido(id);
         });
 
+    }
+
+    @Test
+    public void testarPaginacaoPedido() throws RegraDeNegocioException {
+        RelatorioPedidoDTO relatorioPedidoDTO = new RelatorioPedidoDTO();
+        relatorioPedidoDTO.setStatusPedido("N");
+        relatorioPedidoDTO.setValor(50.0);
+        relatorioPedidoDTO.setNome("Camiseta");
+        relatorioPedidoDTO.setEmail("mail@mail.com");
+
+
+        Page<RelatorioPedidoDTO> pedidoPage = new PageImpl<>(List.of(relatorioPedidoDTO));
+
+        Pageable pageable = PageRequest.of(0, pedidoPage.getSize());
+
+        when(pedidoRepository.buscarTodosRelatoriosPedidosPaginacao(pageable)).thenReturn(pedidoPage);
+
+        Page<RelatorioPedidoDTO> relatorioPedidoDTOS = pedidoService.listarRelatorioPaginado(pageable);
+        RelatorioPedidoDTO pedidoTeste = relatorioPedidoDTOS.getContent().get(0);
+
+        Assertions.assertNotNull(relatorioPedidoDTOS);
+        Assertions.assertEquals(pedidoTeste, relatorioPedidoDTO);
     }
 
 
