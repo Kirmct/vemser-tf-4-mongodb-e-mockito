@@ -5,6 +5,7 @@ import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
+import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 public class HistoricoBuilder {
 
     private final UsuarioService usuarioService;
+    private final HistoricoRepository historicoRepository;
 
 
     public Historico inserirHistorico(String msg, Setor setor) throws RegraDeNegocioException {
@@ -37,6 +39,7 @@ public class HistoricoBuilder {
         historico.setAcao(msg);
         historico.setSetor(setor);
         historico.setDataAcao(LocalDateTime.now());
+        historicoRepository.save(historico);
         return historico;
     }
 }
