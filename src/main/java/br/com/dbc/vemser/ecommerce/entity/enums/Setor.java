@@ -6,5 +6,6 @@ public enum Setor {
     PEDIDO,
     PRODUTO,
     USUARIO,
-    FINANCEIRO
+    FINANCEIRO,
+    HISTORICO
 }
