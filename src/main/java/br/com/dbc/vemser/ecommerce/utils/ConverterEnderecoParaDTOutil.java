@@ -14,9 +14,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConverterEnderecoParaDTOutil {
 
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper;
 
-    public EnderecoDTO converterByEnderecoDTO(EnderecoEntity endereco) {
+    static {
+        objectMapper = new ObjectMapper();
+    }
+
+    public static EnderecoDTO converterByEnderecoDTO(EnderecoEntity endereco) {
         EnderecoDTO enderecoDTO = new EnderecoDTO();
         enderecoDTO.setIdEndereco(endereco.getIdEndereco());
         enderecoDTO.setIdCliente(endereco.getCliente().getIdCliente());
@@ -30,7 +34,7 @@ public class ConverterEnderecoParaDTOutil {
         return enderecoDTO;
     }
 
-    public EnderecoEntity converterByEndereco(EnderecoCreateDTO enderecoCreateDTO) {
+    public static EnderecoEntity converterByEndereco(EnderecoCreateDTO enderecoCreateDTO) {
         EnderecoEntity entity = objectMapper.convertValue(enderecoCreateDTO, EnderecoEntity.class);
 
         return entity;

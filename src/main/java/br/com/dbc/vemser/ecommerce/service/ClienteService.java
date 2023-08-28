@@ -4,8 +4,6 @@ import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClienteDadosCompletosDTO;
 import br.com.dbc.vemser.ecommerce.dto.cliente.ClientePaginadoDTO;
-import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
-import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
@@ -16,6 +14,7 @@ import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
+import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -104,13 +103,11 @@ public class ClienteService {
 
                     clienteConvertido.setPedidoEntities(cliente.getPedidoEntities()
                             .stream()
-                            .map(pedido -> ConversorMapper.converter(pedido, PedidoDTO.class)).toList());
+                            .map(ConversorMapper::converterPedido).toList());
 
-                    clienteConvertido.setEnderecoEntities(cliente.getEnderecoEntities().stream().map(endereco -> {
-                        EnderecoDTO enderecoConvertdo = ConversorMapper.converter(endereco, EnderecoDTO.class);
-                        enderecoConvertdo.setIdCliente(endereco.getCliente().getIdCliente());
-                        return enderecoConvertdo;
-                    }).toList());
+                    clienteConvertido.setEnderecoEntities(cliente.getEnderecoEntities()
+                            .stream()
+                            .map(ConverterEnderecoParaDTOutil::converterByEnderecoDTO).toList());
 
                     return clienteConvertido;
                 }).toList();

@@ -26,7 +26,6 @@ public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
     private final ClienteRepository clienteRepository;
-    private final ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
     private final HistoricoRepository historicoRepository;
     private final HistoricoBuilder historicoBuilder;
 
@@ -39,7 +38,7 @@ public class EnderecoService {
         List<EnderecoEntity> enderecos = enderecoRepository.findAll();
 
         List<EnderecoDTO> enderecoDTOS = enderecos.stream()
-                .map(converterEnderecoParaDTOutil::converterByEnderecoDTO).toList();
+                .map(ConverterEnderecoParaDTOutil::converterByEnderecoDTO).toList();
 
         addLog("Realizando listagem de endereços");
 
@@ -51,7 +50,7 @@ public class EnderecoService {
                 .findById(idEndereco)
                 .orElseThrow(() -> new RegraDeNegocioException("Endereço não encontrado"));
 
-        return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoOpt);
+        return ConverterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoOpt);
     }
 
     public List<EnderecoDTO> listarEnderecoByIdCliente(Integer idCliente) throws RegraDeNegocioException {
@@ -64,7 +63,7 @@ public class EnderecoService {
         addLog("Realizando listagem de endereços por cliente");
 
         return enderecos.stream()
-                .map(converterEnderecoParaDTOutil::converterByEnderecoDTO)
+                .map(ConverterEnderecoParaDTOutil::converterByEnderecoDTO)
                 .collect(Collectors.toList());
     }
 
@@ -74,21 +73,21 @@ public class EnderecoService {
                 .orElseThrow(() -> new RegraDeNegocioException("Cliente não encontrado"));
 
 
-        EnderecoEntity entity = converterEnderecoParaDTOutil.converterByEndereco(enderecoCreateDTO);
+        EnderecoEntity entity = ConverterEnderecoParaDTOutil.converterByEndereco(enderecoCreateDTO);
         entity.setCliente(clienteEntity);
 
         EnderecoEntity enderecoCreated = enderecoRepository.save(entity);
 
         addLog("Endereço cadastrado com sucesso!");
 
-        return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoCreated);
+        return ConverterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoCreated);
     }
 
     public EnderecoDTO update(Integer idEndereco, EnderecoCreateDTO enderecoCreateDTO) throws RegraDeNegocioException {
         EnderecoEntity enderecoOpt = enderecoRepository.findById(idEndereco)
                 .orElseThrow(() -> new RegraDeNegocioException("Endereço não encontrado"));
 
-        EnderecoEntity enderecoAtualizar = converterEnderecoParaDTOutil
+        EnderecoEntity enderecoAtualizar = ConverterEnderecoParaDTOutil
                 .converterByEndereco(enderecoCreateDTO);
 
         enderecoAtualizar.setIdEndereco(enderecoOpt.getIdEndereco());
@@ -99,7 +98,7 @@ public class EnderecoService {
 
         addLog("Endereço atualizado com sucesso!");
 
-        return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
+        return ConverterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
     }
 
     public void delete(Integer idEndereco) throws RegraDeNegocioException {

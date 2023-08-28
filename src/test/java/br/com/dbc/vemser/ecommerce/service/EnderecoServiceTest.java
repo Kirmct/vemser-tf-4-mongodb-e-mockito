@@ -10,7 +10,6 @@ import br.com.dbc.vemser.ecommerce.repository.EnderecoRepository;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConverterEnderecoParaDTOutil;
 import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +32,6 @@ class EnderecoServiceTest {
     @InjectMocks
     private EnderecoService enderecoService;
     @Mock
-    private ConverterEnderecoParaDTOutil converterEnderecoParaDTOutil;
-    @Mock
     private EnderecoRepository enderecoRepository;
 
     @Mock
@@ -46,8 +43,6 @@ class EnderecoServiceTest {
     @Mock
     private ClienteRepository clienteRepository;
 
-    private ConverterEnderecoParaDTOutil conversorDTO =
-            new ConverterEnderecoParaDTOutil(new ObjectMapper());
     private List<EnderecoEntity> listaEnderecos = new ArrayList<>();
     private List<EnderecoDTO> listaEnderecoDTO = new ArrayList<>();
 
@@ -76,7 +71,6 @@ class EnderecoServiceTest {
     @BeforeEach
     void carregarListaEnderecos() {
 
-
         ClienteEntity cliente1 = new ClienteEntity();
         cliente1.setIdCliente(1);
         cliente1.setNome("cliente 1");
@@ -97,7 +91,7 @@ class EnderecoServiceTest {
         listaEnderecos.add(endereco2);
 
         listaEnderecoDTO = listaEnderecos.stream()
-                .map(conversorDTO::converterByEnderecoDTO).toList();
+                .map(ConverterEnderecoParaDTOutil::converterByEnderecoDTO).toList();
 
     }
 
@@ -105,12 +99,7 @@ class EnderecoServiceTest {
     void listarEnderecos() throws Exception {
 
         Mockito.when(enderecoRepository.findAll()).thenReturn(listaEnderecos);
-
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(listaEnderecoDTO.get(0))
-                .thenReturn(listaEnderecoDTO.get(1));
-
+        
         String MENSAGEM_ACAO = "Realizando listagem de endereços";
 
 
@@ -140,10 +129,6 @@ class EnderecoServiceTest {
         Mockito.when(enderecoRepository.findById(idEndereco))
                 .thenReturn(Optional.ofNullable(listaEnderecos.get(0)));
 
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(listaEnderecoDTO.get(0));
-
         EnderecoDTO enderecoById = enderecoService.getEnderecoById(idEndereco);
 
         Assertions.assertNotNull(enderecoById);
@@ -160,12 +145,6 @@ class EnderecoServiceTest {
 
         Mockito.when(enderecoRepository.findEnderecoEntityByCliente_IdCliente(idCliente))
                 .thenReturn(listaEnderecos);
-
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(listaEnderecoDTO.get(0))
-                .thenReturn(listaEnderecoDTO.get(1));
-
 
         String MENSAGEM_ACAO = "Realizando listagem de endereços por cliente";
 
@@ -196,21 +175,13 @@ class EnderecoServiceTest {
         ClienteEntity clienteEntity = criarCliente(idCliente);
         EnderecoEntity endereco = listaEnderecos.get(0);
         endereco.setCliente(clienteEntity);
-        EnderecoDTO enderecoDTO = conversorDTO.converterByEnderecoDTO(endereco);
+        EnderecoDTO enderecoDTO = ConverterEnderecoParaDTOutil.converterByEnderecoDTO(endereco);
 
         Mockito.when(clienteRepository.findById(idCliente))
                 .thenReturn(Optional.of(clienteEntity));
 
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEndereco(any(EnderecoCreateDTO.class)))
-                .thenReturn(endereco);
-
         Mockito.when(enderecoRepository.save(any(EnderecoEntity.class)))
                 .thenReturn(endereco);
-
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(enderecoDTO);
 
 
         Historico historico = criarHistorico("Endereço criado!");
@@ -249,17 +220,7 @@ class EnderecoServiceTest {
 
         endereco.setLogradouro("Rua Nova");
 
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEndereco(any(EnderecoCreateDTO.class)))
-                .thenReturn(endereco);
-
         Mockito.when(enderecoRepository.save(any(EnderecoEntity.class))).thenReturn(endereco);
-
-        EnderecoDTO enderecoConvertido = conversorDTO.converterByEnderecoDTO(endereco);
-
-        Mockito.when(converterEnderecoParaDTOutil
-                        .converterByEnderecoDTO(any(EnderecoEntity.class)))
-                .thenReturn(enderecoConvertido);
 
         String MENSAGEM_ENDERECO = "Endereço atualizado com sucesso!";
 
@@ -280,11 +241,8 @@ class EnderecoServiceTest {
         Assertions.assertEquals(historicoPersistencia.getAcao(), "Endereço atualizado com sucesso!");
 
         Assertions.assertNotNull(enderecoAtualizado);
-        Assertions.assertEquals(enderecoConvertido, enderecoAtualizado);
         Assertions.assertThrows(RegraDeNegocioException.class,
                 () -> enderecoService.update(2, enderecoCreateDTO()));
-
-
     }
 
 
@@ -325,7 +283,6 @@ class EnderecoServiceTest {
 
         Assertions.assertThrows(RegraDeNegocioException.class,
                 () -> enderecoService.delete(2));
-
 
     }
 
