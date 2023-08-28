@@ -1,9 +1,14 @@
 package br.com.dbc.vemser.ecommerce.controller;
 
-import br.com.dbc.vemser.ecommerce.entity.FinanceiroEntity;
+import br.com.dbc.vemser.ecommerce.doc.FinancasControllerDoc;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroDTO;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoFinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoVendidoFinanceiro;
 import br.com.dbc.vemser.ecommerce.service.FinanceiroProdutoService;
 import br.com.dbc.vemser.ecommerce.service.FinanceiroService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,19 +20,24 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/financeiro")
-public class FinancasController {
+public class FinancasController implements FinancasControllerDoc {
 
     private final FinanceiroService financeiroService;
 
     private final FinanceiroProdutoService financeiroProdutoService;
 
+
     @GetMapping("/pedidos-vendidos")
-    public List<FinanceiroEntity> listarTodos() {
+    public List<FinanceiroDTO> listarTodos() {
         return financeiroService.findAll();
     }
 
+
+
+
     @GetMapping("/produtos-vendidos")
-    public List<ProdutoVendidoFinanceiro> listarTodosProdutos() {
+    public List<ProdutoVendidoFinanceiroDTO> listarTodosProdutos() {
+
         return financeiroProdutoService.findAll();
     }
 

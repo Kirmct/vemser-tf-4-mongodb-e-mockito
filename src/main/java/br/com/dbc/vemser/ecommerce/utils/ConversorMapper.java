@@ -1,6 +1,8 @@
 package br.com.dbc.vemser.ecommerce.utils;
 
+import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
+import br.com.dbc.vemser.ecommerce.entity.FinanceiroEntity;
 import br.com.dbc.vemser.ecommerce.entity.PedidoEntity;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,5 +27,18 @@ public class ConversorMapper {
         pedidoDTO.setProdutoEntities(pedido.getProdutoEntities());
         return pedidoDTO;
     }
+
+    public static FinanceiroDTO  converterFinanceiro(FinanceiroEntity financeiroEntity) {
+        FinanceiroDTO financeiroDTO = new FinanceiroDTO();
+
+        financeiroDTO.setId(financeiroEntity.getId());
+        financeiroDTO.setTotal(financeiroEntity.getTotal());
+        financeiroDTO.setDataDePagamento(financeiroEntity.getDataDePagamento());
+        financeiroDTO.setIdPedido(financeiroEntity.getIdPedido());
+
+        return financeiroDTO;
+    }
+
+
 
 }
