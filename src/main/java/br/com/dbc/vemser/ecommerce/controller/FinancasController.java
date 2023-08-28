@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,29 +33,26 @@ public class FinancasController implements FinancasControllerDoc {
 
 
     @GetMapping("/pedidos-vendidos")
-    public List<FinanceiroDTO> listarTodos() {
-        return financeiroService.findAll();
+    public ResponseEntity<List<FinanceiroDTO>> listarTodos() {
+        return new ResponseEntity<>(financeiroService.findAll(), HttpStatus.OK);
     }
 
-
-
-
     @GetMapping("/produtos-vendidos")
-    public List<ProdutoVendidoFinanceiroDTO> listarTodosProdutos() {
+    public ResponseEntity<List<ProdutoVendidoFinanceiroDTO>> listarTodosProdutos() {
 
-        return financeiroProdutoService.findAll();
+        return new ResponseEntity<>(financeiroProdutoService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/produtos-vendidos-setor")
-    public List<FinanceiroPorSetorDTO> listarTodosProdutosSetor() {
+    public ResponseEntity<List<FinanceiroPorSetorDTO>> listarTodosProdutosSetor() {
 
-        return financeiroProdutoService.totalVendasPorSetor();
+        return new ResponseEntity<>(financeiroProdutoService.totalVendasPorSetor(), HttpStatus.OK);
     }
 
     @GetMapping("/produtos-vendidos-contagem")
-    public List<ProdutoVendidoCount> produtosMaisVendidos() {
+    public ResponseEntity<List<ProdutoVendidoCount>> produtosMaisVendidos() {
 
-        return financeiroProdutoService.produtosMaisVendidos();
+        return new ResponseEntity<>(financeiroProdutoService.produtosMaisVendidos(), HttpStatus.OK);
     }
 
 }
