@@ -5,17 +5,11 @@ import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoCreateDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.PedidoDTO;
 import br.com.dbc.vemser.ecommerce.dto.pedido.RelatorioPedidoDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
-import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
-import br.com.dbc.vemser.ecommerce.entity.Historico;
-import br.com.dbc.vemser.ecommerce.entity.PedidoEntity;
-import br.com.dbc.vemser.ecommerce.entity.ProdutoEntity;
+import br.com.dbc.vemser.ecommerce.entity.*;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
-import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
-import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
-import br.com.dbc.vemser.ecommerce.repository.PedidoRepository;
-import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
+import br.com.dbc.vemser.ecommerce.repository.*;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -23,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +36,9 @@ public class PedidoService {
 
     private final ClienteRepository clienteRepository;
     private final ObjectMapper objectMapper;
+
+    private final FinanceiroRepository financeiroRepository;
+    private final ProdutoMongoRepository produtoMongoRepository;
 
     private static void validacaoPedidoFinalizado(PedidoEntity pedidoAchado) throws RegraDeNegocioException {
         if (pedidoAchado.getStatusPedido().equalsIgnoreCase("S"))
@@ -130,15 +128,6 @@ public class PedidoService {
         historicoRepository.save(historico);
 
         return pedidoRepository.relatorioPedido();
-    }
-
-    private PedidoDTO converterPedidooParaDTO(PedidoEntity pedido) {
-
-        PedidoDTO pedidoDTO = objectMapper.convertValue(pedido, PedidoDTO.class);
-        pedidoDTO.setCliente(pedido.getCliente());
-        pedidoDTO.setProdutoEntities(pedido.getProdutoEntities());
-
-        return pedidoDTO;
     }
 
     public PedidoDTO buscarByIdPedido(Integer idPedido) throws RegraDeNegocioException {
@@ -282,8 +271,28 @@ public class PedidoService {
         Historico historico = inserirHistorico(msg);
         historicoRepository.save(historico);
 
-        return pedidoDTO;
+        addFinanceiro(pedidoDTO);
 
+        return pedidoDTO;
+    }
+
+    private void addFinanceiro(PedidoDTO pedidoDTO) {
+        FinanceiroEntity financeiro = new FinanceiroEntity();
+        financeiro.setIdPedido(pedidoDTO.getIdPedido());
+        financeiro.setTotal(pedidoDTO.getValor());
+        financeiro.setDataDePagamento(LocalDate.now());
+        Integer idPedido = pedidoDTO.getIdPedido();
+        List<ProdutoVendidoFinanceiro> produtosVendidos = pedidoDTO.getProdutoEntities()
+                .stream()
+                .map(produto -> {
+                    ProdutoVendidoFinanceiro produtoFinanceiroConvertido = ConversorMapper.converter(produto, ProdutoVendidoFinanceiro.class);
+                    produtoFinanceiroConvertido.setIdPedido(idPedido);
+                    return produtoFinanceiroConvertido;
+                }).toList();
+
+        produtoMongoRepository.saveAll(produtosVendidos);
+
+        financeiroRepository.save(financeiro);
     }
 
 }

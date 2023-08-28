@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 public interface ClienteControllerDoc {
@@ -109,7 +110,7 @@ public interface ClienteControllerDoc {
 
     )
     @GetMapping("/paginacao")
-    Page<ClientePaginadoDTO> listarClientePaginado(@Positive @RequestParam Integer pagina,
+    Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero @RequestParam Integer pagina,
                                                    @Positive @RequestParam Integer quantidadeRegistros);
 
 }

@@ -3,9 +3,9 @@ package br.com.dbc.vemser.ecommerce.utils;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
+import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.service.UsuarioService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class HistoricoBuilder {
     private final UsuarioService usuarioService;
 
 
-    public Historico inserirHistorico(String msg) throws RegraDeNegocioException {
+    public Historico inserirHistorico(String msg, Setor setor) throws RegraDeNegocioException {
 
         UsuarioLogadoDTO usuarioLogadoDTO = usuarioService.getLoggedUser();
 
@@ -35,6 +35,7 @@ public class HistoricoBuilder {
             historico.setUsuario("Visitante");
         }
         historico.setAcao(msg);
+            historico.setSetor(setor);
         historico.setDataAcao(LocalDateTime.now());
         return historico;
     }

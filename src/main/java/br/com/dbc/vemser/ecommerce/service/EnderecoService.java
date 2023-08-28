@@ -6,6 +6,7 @@ import br.com.dbc.vemser.ecommerce.dto.endereco.EnderecoDTO;
 import br.com.dbc.vemser.ecommerce.entity.ClienteEntity;
 import br.com.dbc.vemser.ecommerce.entity.EnderecoEntity;
 import br.com.dbc.vemser.ecommerce.entity.Historico;
+import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
 import br.com.dbc.vemser.ecommerce.repository.EnderecoRepository;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -30,6 +30,10 @@ public class EnderecoService {
     private final HistoricoRepository historicoRepository;
     private final HistoricoBuilder historicoBuilder;
 
+    private void addLog(String mensagem) throws RegraDeNegocioException {
+        Historico historico = historicoBuilder.inserirHistorico(mensagem, Setor.ENDERECO);
+        historicoRepository.save(historico);
+    }
 
     public List<EnderecoDTO> listarEnderecos() throws RegraDeNegocioException {
         List<EnderecoEntity> enderecos = enderecoRepository.findAll();
@@ -37,9 +41,7 @@ public class EnderecoService {
         List<EnderecoDTO> enderecoDTOS = enderecos.stream()
                 .map(converterEnderecoParaDTOutil::converterByEnderecoDTO).toList();
 
-
-        Historico historico = historicoBuilder.inserirHistorico("Realizando listagem de endereços");
-        historicoRepository.save(historico);
+        addLog("Realizando listagem de endereços");
 
         return enderecoDTOS;
     }
@@ -59,8 +61,7 @@ public class EnderecoService {
             throw new RegraDeNegocioException("Nenhum endereço encontrado para o cliente");
         }
 
-        Historico historico = historicoBuilder.inserirHistorico("Realizando listagem de endereços por cliente");
-        historicoRepository.save(historico);
+        addLog("Realizando listagem de endereços por cliente");
 
         return enderecos.stream()
                 .map(converterEnderecoParaDTOutil::converterByEnderecoDTO)
@@ -78,8 +79,7 @@ public class EnderecoService {
 
         EnderecoEntity enderecoCreated = enderecoRepository.save(entity);
 
-        Historico historico = historicoBuilder.inserirHistorico("Endereço cadastrado com sucesso!");
-        historicoRepository.save(historico);
+        addLog("Endereço cadastrado com sucesso!");
 
         return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoCreated);
     }
@@ -97,9 +97,7 @@ public class EnderecoService {
 
         EnderecoEntity enderecoUpdated = enderecoRepository.save(enderecoAtualizar);
 
-        Historico historico = historicoBuilder.inserirHistorico("Endereço atualizado com sucesso!");
-        historicoRepository.save(historico);
-
+        addLog("Endereço atualizado com sucesso!");
 
         return converterEnderecoParaDTOutil.converterByEnderecoDTO(enderecoUpdated);
     }
@@ -112,9 +110,7 @@ public class EnderecoService {
 
             enderecoRepository.delete(endereco);
 
-            Historico historico = historicoBuilder.inserirHistorico("Endereço deletado com sucesso!");
-            historicoRepository.save(historico);
-
+            addLog("Endereço deletado com sucesso!");
     }
 
 

@@ -21,7 +21,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -114,7 +116,7 @@ class EnderecoServiceTest {
 
         Historico historico = criarHistorico(MENSAGEM_ACAO);
 
-        Mockito.when(historicoBuilder.inserirHistorico(any()))
+        Mockito.when(historicoBuilder.inserirHistorico(any(), any()))
                 .thenReturn(historico);
 
         Mockito.when(historicoRepository.save(any(Historico.class)))
@@ -170,7 +172,7 @@ class EnderecoServiceTest {
 
         Historico historico = criarHistorico(MENSAGEM_ACAO);
 
-        Mockito.when(historicoBuilder.inserirHistorico(any()))
+        Mockito.when(historicoBuilder.inserirHistorico(any(), any()))
                 .thenReturn(historico);
 
         Mockito.when(historicoRepository.save(any(Historico.class)))
@@ -213,7 +215,7 @@ class EnderecoServiceTest {
 
         Historico historico = criarHistorico("Endereço criado!");
 
-        Mockito.when(historicoBuilder.inserirHistorico(any()))
+        Mockito.when(historicoBuilder.inserirHistorico(any(), any()))
                 .thenReturn(historico);
 
         Mockito.when(historicoRepository.save(any(Historico.class)))
@@ -263,7 +265,7 @@ class EnderecoServiceTest {
 
         Historico historico = criarHistorico(MENSAGEM_ENDERECO);
 
-        Mockito.when(historicoBuilder.inserirHistorico(any()))
+        Mockito.when(historicoBuilder.inserirHistorico(any(), any()))
                 .thenReturn(historico);
 
         Mockito.when(historicoRepository.save(any(Historico.class)))
@@ -304,7 +306,7 @@ class EnderecoServiceTest {
 
         Historico historico = criarHistorico(MENSAGEM_ENDERECO);
 
-        Mockito.when(historicoBuilder.inserirHistorico(any()))
+        Mockito.when(historicoBuilder.inserirHistorico(any(), any()))
                 .thenReturn(historico);
 
         Mockito.when(historicoRepository.save(any(Historico.class)))
