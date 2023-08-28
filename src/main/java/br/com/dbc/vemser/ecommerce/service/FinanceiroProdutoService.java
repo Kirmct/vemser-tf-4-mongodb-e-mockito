@@ -1,7 +1,8 @@
 package br.com.dbc.vemser.ecommerce.service;
 
-import br.com.dbc.vemser.ecommerce.entity.ProdutoVendidoFinanceiro;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoFinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoMongoRepository;
+import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,10 @@ public class FinanceiroProdutoService {
 
     private final ProdutoMongoRepository produtoMongoRepository;
 
-    public List<ProdutoVendidoFinanceiro> findAll() {
-        return produtoMongoRepository.findAll();
+    public List<ProdutoVendidoFinanceiroDTO> findAll() {
+
+        return produtoMongoRepository.findAll().stream().map(prodVendido ->
+                ConversorMapper.converter(prodVendido, ProdutoVendidoFinanceiroDTO.class)).toList();
     }
 
 }
