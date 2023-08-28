@@ -31,11 +31,11 @@ public class HistoricoBuilder {
             historico.setCargo(Cargo.valueOf(cargo));
             historico.setUsuario(usuarioLogadoDTO.getLogin() + ".");
         } else {
-            historico.setCargo(Cargo.valueOf("REOLE_VISITANTE"));
+            historico.setCargo(Cargo.valueOf("ROLE_VISITANTE"));
             historico.setUsuario("Visitante");
         }
         historico.setAcao(msg);
-            historico.setSetor(setor);
+        historico.setSetor(setor);
         historico.setDataAcao(LocalDateTime.now());
         return historico;
     }

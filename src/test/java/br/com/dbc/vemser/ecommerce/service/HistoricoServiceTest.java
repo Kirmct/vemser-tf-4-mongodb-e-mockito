@@ -8,6 +8,7 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
+import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,9 @@ class HistoricoServiceTest {
 
     @Mock
     private HistoricoRepository historicoRepository;
+
+    @Mock
+    private HistoricoBuilder historicoBuilder;
 
     @Mock
     private ObjectMapper objectMapper;

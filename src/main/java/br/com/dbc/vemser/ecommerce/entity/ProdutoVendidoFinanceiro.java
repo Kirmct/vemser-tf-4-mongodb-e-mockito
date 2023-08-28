@@ -2,9 +2,7 @@ package br.com.dbc.vemser.ecommerce.entity;
 
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoSetor;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoTamanho;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.EnumType;
@@ -14,7 +12,6 @@ import javax.persistence.Id;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Document(collection = "financeiro_de_produto")
 public class ProdutoVendidoFinanceiro {
 

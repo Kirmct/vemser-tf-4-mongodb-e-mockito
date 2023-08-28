@@ -35,17 +35,17 @@ public class HistoricoController implements HistoricoControllerDoc {
     }
 
     @GetMapping("/by-cargo")
-    public ResponseEntity<List<HistoricoDTO>> findByCargo(Cargo cargo) throws RegraDeNegocioException {
+    public ResponseEntity<List<HistoricoDTO>> findByCargo(Cargo cargo){
         return new ResponseEntity<>(historicoService.findByCargo(cargo), HttpStatus.OK);
     }
 
     @GetMapping("/group-and-count-by-cargo")
-    public ResponseEntity<List<HistoricoContadorDTO>> groupByCargoAndCount() throws RegraDeNegocioException {
+    public ResponseEntity<List<HistoricoContadorDTO>> groupByCargoAndCount() {
         return new ResponseEntity<>(historicoService.groupByCargoAndCount(), HttpStatus.OK);
     }
 
     @GetMapping("/by-setor")
-    public ResponseEntity<List<HistoricoDTO>> findBySetor(Setor setor) throws RegraDeNegocioException {
+    public ResponseEntity<List<HistoricoDTO>> findBySetor(Setor setor){
         return new ResponseEntity<>(historicoService.findBySetor(setor), HttpStatus.OK);
     }
 
