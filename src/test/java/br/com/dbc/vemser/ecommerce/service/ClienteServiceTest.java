@@ -11,9 +11,8 @@ import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.exceptions.UniqueFieldExistsException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
 import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
-import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import br.com.dbc.vemser.ecommerce.utils.HistoricoBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,9 +43,6 @@ class ClienteServiceTest {
     private ClienteService clienteService;
 
     @Mock
-    private ObjectMapper objectMapper;
-
-    @Mock
     private ClienteRepository clienteRepository;
 
     @Mock
@@ -56,13 +52,10 @@ class ClienteServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @Mock
-    private UsuarioService usuarioService;
-
-    @Mock
     private PasswordEncoder bCript;
 
     @Mock
-    private HistoricoRepository historicoRepository;
+    private HistoricoBuilder historicoBuilder;
 
     private UsuarioEntity usuario;
 
@@ -152,7 +145,7 @@ class ClienteServiceTest {
     }
 
     @Test
-    void listarClientesComTodosOsDados() throws RegraDeNegocioException {
+    void listarClientesComTodosOsDados() {
         ClienteDadosCompletosDTO clienteDadosCompletosDTO = new ClienteDadosCompletosDTO(
                 1,
                 "Jeff",
@@ -218,11 +211,7 @@ class ClienteServiceTest {
         Page<ClientePaginadoDTO> clientePaginadoDTORetornado = clienteService.clientePaginado(pageable);
         ClientePaginadoDTO clienteCobaiaTeste = clientePaginadoDTORetornado.getContent().get(0);
 
-        Assertions.assertEquals(clienteCobaiaTeste.getIdCliente(), clientePaginadoDTO.getIdCliente());
-        Assertions.assertEquals(clienteCobaiaTeste.getNome(), clientePaginadoDTO.getNome());
-        Assertions.assertEquals(clienteCobaiaTeste.getCpf(), clientePaginadoDTO.getCpf());
-        Assertions.assertEquals(clienteCobaiaTeste.getEmail(), clientePaginadoDTO.getEmail());
-        Assertions.assertEquals(clienteCobaiaTeste.getTelefone(), clientePaginadoDTO.getTelefone());
+        Assertions.assertEquals(clienteCobaiaTeste, clientePaginadoDTO);
     }
 
     @Test

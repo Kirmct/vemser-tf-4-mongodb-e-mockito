@@ -8,10 +8,7 @@ import br.com.dbc.vemser.ecommerce.entity.*;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoSetor;
 import br.com.dbc.vemser.ecommerce.entity.enums.TipoTamanho;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
-import br.com.dbc.vemser.ecommerce.repository.ClienteRepository;
-import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
-import br.com.dbc.vemser.ecommerce.repository.PedidoRepository;
-import br.com.dbc.vemser.ecommerce.repository.ProdutoRepository;
+import br.com.dbc.vemser.ecommerce.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +39,12 @@ class PedidoServiceTest {
 
     @Mock
     private HistoricoRepository historicoRepository;
+
+    @Mock
+    private FinanceiroRepository financeiroRepository;
+
+    @Mock
+    private ProdutoMongoRepository produtoMongoRepository;
 
     @Mock
     private ClienteRepository clienteRepository;

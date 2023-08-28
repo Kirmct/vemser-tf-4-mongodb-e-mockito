@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -25,6 +24,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -109,11 +110,11 @@ class HistoricoServiceTest {
     @Test
     void findAll() {
 
-        Mockito.lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
+        lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
                 .thenReturn(listaHistoricoDTO.get(0))
                 .thenReturn(listaHistoricoDTO.get(1));
 
-        Mockito.when(historicoRepository.findAll()).thenReturn(listaHistorico);
+        when(historicoRepository.findAll()).thenReturn(listaHistorico);
 
 
         List<HistoricoDTO> listarHistoricosMetodo = historicoService.findAll();
@@ -128,10 +129,10 @@ class HistoricoServiceTest {
         String idHistorico = "1";
 
 
-        Mockito.when(historicoRepository.findById(idHistorico))
+        when(historicoRepository.findById(idHistorico))
                 .thenReturn(Optional.ofNullable(listaHistorico.get(0)));
 
-        Mockito.lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
+        lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
                 .thenReturn(listaHistoricoDTO.get(0));
 
 
@@ -148,10 +149,10 @@ class HistoricoServiceTest {
         Cargo cargo = Cargo.valueOf(cargoEntity.getNome());
 
 
-        Mockito.when(historicoRepository.findAllByCargo(cargo))
+        when(historicoRepository.findAllByCargo(cargo))
                 .thenReturn(listaHistorico);
 
-        Mockito.lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
+        lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
                 .thenReturn(listaHistoricoDTO.get(0))
                 .thenReturn(listaHistoricoDTO.get(1));
 
@@ -168,10 +169,10 @@ class HistoricoServiceTest {
         Setor setor = Setor.USUARIO;
 
 
-        Mockito.when(historicoRepository.findAllBySetor(setor))
+        when(historicoRepository.findAllBySetor(setor))
                 .thenReturn(listaHistorico);
 
-        Mockito.lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
+        lenient().when(objectMapper.convertValue(any(Historico.class), eq(HistoricoDTO.class)))
                 .thenReturn(listaHistoricoDTO.get(0))
                 .thenReturn(listaHistoricoDTO.get(1));
 

@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Data
@@ -43,7 +44,7 @@ public class ClienteController implements ClienteControllerDoc {
     }
 
     @GetMapping("/paginacao")
-    public Page<ClientePaginadoDTO> listarClientePaginado(@Positive @RequestParam Integer pagina,
+    public Page<ClientePaginadoDTO> listarClientePaginado(@PositiveOrZero(message = "O número da página deve ser maior ou igual a 0")  @RequestParam Integer pagina,
                                                           @Positive @RequestParam Integer quantidadeRegistros) {
 
         Sort ordenacao = Sort.by("nome").and(Sort.by("cpf"));

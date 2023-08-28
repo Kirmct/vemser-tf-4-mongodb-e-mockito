@@ -24,4 +24,6 @@ public interface ClienteRepository extends JpaRepository<ClienteEntity, Integer>
             "From CLIENTE c ")
     Page<ClientePaginadoDTO> buscarTodosClientesPaginados(Pageable pageable);
 
+
+
 }

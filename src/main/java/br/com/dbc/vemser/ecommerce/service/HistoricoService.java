@@ -48,7 +48,9 @@ public class HistoricoService {
 
 
     public HistoricoDTO convertToDTO(Historico historico){
-        return objectMapper.convertValue(historico, HistoricoDTO.class);
+        HistoricoDTO historicoDTO = objectMapper.convertValue(historico, HistoricoDTO.class);
+        historicoDTO.setSetor(historico.getSetor());
+        return historicoDTO;
     }
     public List<HistoricoDTO> convertToDTOList(List<Historico> historico){
         return historico.stream().map(
