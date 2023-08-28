@@ -30,8 +30,9 @@ public class EnderecoService {
     private final HistoricoBuilder historicoBuilder;
 
     private void addLog(String mensagem) throws RegraDeNegocioException {
-        Historico historico = historicoBuilder.inserirHistorico(mensagem, Setor.ENDERECO);
-        historicoRepository.save(historico);
+        historicoBuilder.inserirHistorico(mensagem, Setor.ENDERECO);
+//        Historico historico = historicoBuilder.inserirHistorico(mensagem, Setor.ENDERECO);
+//        historicoRepository.save(historico);
     }
 
     public List<EnderecoDTO> listarEnderecos() throws RegraDeNegocioException {

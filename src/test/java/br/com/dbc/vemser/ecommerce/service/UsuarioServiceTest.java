@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.ecommerce.service;
 
+import br.com.dbc.vemser.ecommerce.dto.usuario.LoginDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
@@ -15,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashSet;
@@ -23,8 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
@@ -32,6 +36,9 @@ class UsuarioServiceTest {
     private UsuarioService usuarioService;
     @Mock
     private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private PasswordEncoder bCrypt;
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -98,6 +105,43 @@ class UsuarioServiceTest {
 
     }
 
+    @Test
+    void cadastroUsuario() throws RegraDeNegocioException {
+
+        Integer role = 1;
+        String login = "usuario@usuario.com";
+        String senha = "123";
+        String bcrypt = "$2a$12$TPmEEhmwn2zwFcraq0PHkeSj5uk9ze6a4pghsTTi59yheZXzWRBMO";
+
+
+       lenient().when(usuarioService.cadastro(criarLoginDTO(login, senha), role))
+                .thenReturn(criarLoginDTO(login, senha));
+
+        when(bCrypt.encode(any())).thenReturn(bcrypt);
+
+        LoginDTO cadastro1 = usuarioService.cadastro(criarLoginDTO(login, senha), 1);
+
+         verify(usuarioRepository, times(1)).save(any(UsuarioEntity.class));
+
+        Assertions.assertNotNull(cadastro1);
+    }
+
+
+    @Test
+    void erroCadastroUsuarioNaoEncontrado() throws RegraDeNegocioException {
+
+        Integer role = 1;
+        String login = "usuario@usuario.com";
+        String senha = "123";
+
+
+        lenient().when(usuarioService.cadastro(criarLoginDTO(login, senha), role))
+                .thenReturn(criarLoginDTO(login, senha));
+
+        Assertions.assertThrows(RegraDeNegocioException.class, () ->
+                usuarioService.cadastro(criarLoginDTO("qualquer", senha), 6) );
+    }
+
     private UsuarioEntity criarUsuario() {
         String CARGO_NOME = "ROLE_ADMIN";
         String LOGIN = "usuario@usuario.com";
@@ -106,14 +150,40 @@ class UsuarioServiceTest {
         CargoEntity cargoEntity = new CargoEntity();
         cargoEntity.setIdCargo(1);
         cargoEntity.setNome(CARGO_NOME);
-        cargoEntity.setIdCargo(1);
+
 
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setIdUsuario(1);
         usuarioEntity.setLogin(LOGIN);
-        usuarioEntity.setLogin(SENHA);
+        usuarioEntity.setSenha(SENHA);
         usuarioEntity.setCargos(new HashSet<>(List.of(cargoEntity)));
 
         return usuarioEntity;
+    }
+
+    private UsuarioEntity criarUsuarioComRole(LoginDTO loginDTO, Integer role) {
+
+        String LOGIN = loginDTO.getLogin();
+        String SENHA = loginDTO.getSenha();
+
+        CargoEntity cargoEntity = new CargoEntity();
+        cargoEntity.setIdCargo(role);
+
+        UsuarioEntity usuarioEntity = new UsuarioEntity();
+        usuarioEntity.setIdUsuario(1);
+        usuarioEntity.setLogin(LOGIN);
+        usuarioEntity.setSenha(SENHA);
+
+        return usuarioEntity;
+    }
+
+    private LoginDTO criarLoginDTO(String login, String senha) {
+
+        LoginDTO loginDTO = new LoginDTO();
+
+        loginDTO.setLogin(login);
+        loginDTO.setSenha(senha);
+
+        return loginDTO;
     }
 }
