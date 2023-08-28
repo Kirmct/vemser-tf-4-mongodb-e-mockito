@@ -36,7 +36,6 @@ public class HistoricoService {
         return convertToDTOList(historicoRepository.findAllByCargo(cargo));
     }
     public List<HistoricoContadorDTO> groupByCargoAndCount() {
-        System.out.println(historicoRepository.groupByCargoAndCount());
         return historicoRepository.groupByCargoAndCount().stream()
                 .map(log -> new HistoricoContadorDTO(log.getCargo(), log.getQuantidade()))
                 .collect(Collectors.toList());

@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.ecommerce.repository;
 
 import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroPorSetorDTO;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoCount;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoVendidoFinanceiro;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,4 +19,9 @@ public interface ProdutoMongoRepository extends MongoRepository<ProdutoVendidoFi
     )
     List<FinanceiroPorSetorDTO> totalVendasPorSetor();
 
+    @Aggregation(pipeline = {
+            "{'$unwind': '$idProduto' }",
+            "{'$group': { '_id': '$idProduto', 'quantidade': { '$sum': 1 } } }"
+    })
+    List<ProdutoVendidoCount> produtosMaisVendidos();
 }

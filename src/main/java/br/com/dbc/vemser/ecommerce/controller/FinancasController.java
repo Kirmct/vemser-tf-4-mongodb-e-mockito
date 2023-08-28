@@ -3,6 +3,7 @@ package br.com.dbc.vemser.ecommerce.controller;
 import br.com.dbc.vemser.ecommerce.doc.FinancasControllerDoc;
 import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroPorSetorDTO;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoCount;
 import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoFinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.entity.ProdutoVendidoFinanceiro;
 import br.com.dbc.vemser.ecommerce.service.FinanceiroProdutoService;
@@ -47,6 +48,12 @@ public class FinancasController implements FinancasControllerDoc {
     public List<FinanceiroPorSetorDTO> listarTodosProdutosSetor() {
 
         return financeiroProdutoService.totalVendasPorSetor();
+    }
+
+    @GetMapping("/produtos-vendidos-contagem")
+    public List<ProdutoVendidoCount> produtosMaisVendidos() {
+
+        return financeiroProdutoService.produtosMaisVendidos();
     }
 
 }
