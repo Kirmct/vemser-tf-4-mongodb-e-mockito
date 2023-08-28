@@ -1,6 +1,7 @@
 package br.com.dbc.vemser.ecommerce.service;
 
 import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroDTO;
+import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroPorSetorDTO;
 import br.com.dbc.vemser.ecommerce.repository.FinanceiroRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,7 @@ public class FinanceiroService {
                 .map(financeiro ->
                         ConversorMapper.converterFinanceiro(financeiro)).toList();
     }
+
+
 
 }

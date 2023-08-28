@@ -1,5 +1,6 @@
 package br.com.dbc.vemser.ecommerce.service;
 
+import br.com.dbc.vemser.ecommerce.dto.financeiro.FinanceiroPorSetorDTO;
 import br.com.dbc.vemser.ecommerce.dto.financeiro.ProdutoVendidoFinanceiroDTO;
 import br.com.dbc.vemser.ecommerce.repository.ProdutoMongoRepository;
 import br.com.dbc.vemser.ecommerce.utils.ConversorMapper;
@@ -19,6 +20,11 @@ public class FinanceiroProdutoService {
 
         return produtoMongoRepository.findAll().stream().map(prodVendido ->
                 ConversorMapper.converter(prodVendido, ProdutoVendidoFinanceiroDTO.class)).toList();
+    }
+
+    public List<FinanceiroPorSetorDTO> totalVendasPorSetor(){
+
+        return produtoMongoRepository.totalVendasPorSetor();
     }
 
 }
