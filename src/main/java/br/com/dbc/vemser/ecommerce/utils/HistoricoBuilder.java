@@ -6,6 +6,7 @@ import br.com.dbc.vemser.ecommerce.entity.enums.Cargo;
 import br.com.dbc.vemser.ecommerce.entity.enums.Setor;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
+import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
 import br.com.dbc.vemser.ecommerce.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 public class HistoricoBuilder {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
     private final HistoricoRepository historicoRepository;
 
 
@@ -29,7 +31,7 @@ public class HistoricoBuilder {
 
         if (usuarioLogadoDTO.getIdUsuario() != null) {
             Integer idUsuario = usuarioService.getIdLoggedUser();
-            String cargo = usuarioService.findByRole(idUsuario);
+            String cargo = usuarioRepository.findByRole(idUsuario);
             historico.setCargo(Cargo.valueOf(cargo));
             historico.setUsuario(usuarioLogadoDTO.getLogin() + ".");
         } else {

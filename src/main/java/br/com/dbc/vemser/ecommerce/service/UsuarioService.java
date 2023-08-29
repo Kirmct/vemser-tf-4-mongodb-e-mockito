@@ -4,15 +4,13 @@ import br.com.dbc.vemser.ecommerce.dto.usuario.LoginDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UserAtualizacaoDTO;
 import br.com.dbc.vemser.ecommerce.dto.usuario.UsuarioLogadoDTO;
 import br.com.dbc.vemser.ecommerce.entity.CargoEntity;
-import br.com.dbc.vemser.ecommerce.entity.Historico;
 import br.com.dbc.vemser.ecommerce.entity.UsuarioEntity;
 import br.com.dbc.vemser.ecommerce.exceptions.RegraDeNegocioException;
 import br.com.dbc.vemser.ecommerce.repository.CargoRepository;
-import br.com.dbc.vemser.ecommerce.repository.HistoricoRepository;
 import br.com.dbc.vemser.ecommerce.repository.UsuarioRepository;
+import br.com.dbc.vemser.ecommerce.utils.BuscarUsuarioContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +24,7 @@ public class UsuarioService {
     private final ObjectMapper objectMapper;
     private final PasswordEncoder bCrypt;
     private final CargoRepository cargoRepository;
+    private final BuscarUsuarioContext buscarUsuarioContext;
 
 
     public Optional<UsuarioEntity> findByLogin(String login) {
@@ -34,8 +33,7 @@ public class UsuarioService {
     }
 
     public Integer getIdLoggedUser() {
-        String index = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        return Integer.parseInt(index);
+        return buscarUsuarioContext.idUsuarioLogado();
     }
 
     public UsuarioLogadoDTO getLoggedUser() throws RegraDeNegocioException {
@@ -43,7 +41,7 @@ public class UsuarioService {
         try {
             usuarioLogadoDTO = objectMapper.convertValue(findById(getIdLoggedUser()), UsuarioLogadoDTO.class);
 
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Teste");
         }
         return usuarioLogadoDTO;
@@ -77,22 +75,23 @@ public class UsuarioService {
 
     public void atualizarSenha(LoginDTO loginDTO) throws RegraDeNegocioException {
 
-        Optional<UsuarioEntity> usuarioRecuperado = findByLogin(loginDTO.getLogin());
-        if (usuarioRecuperado.isEmpty()) throw new RegraDeNegocioException("Usuário não cadastrado!");
+        UsuarioEntity usuarioRecuperado = findByLogin(loginDTO.getLogin())
+                .orElseThrow(() -> new RegraDeNegocioException("Usuário não cadastrado!"));
 
-        usuarioRecuperado.get().setSenha(bCrypt.encode(loginDTO.getSenha()));
+        usuarioRecuperado.setSenha(bCrypt.encode(loginDTO.getSenha()));
 
-        usuarioRepository.save(usuarioRecuperado.get());
+        usuarioRepository.save(usuarioRecuperado);
 
     }
 
     public void desativarUsuario(String login) throws RegraDeNegocioException {
 
-        Optional<UsuarioEntity> usuarioRecuperado = findByLogin(login);
-        if (usuarioRecuperado.isEmpty()) throw new RegraDeNegocioException("Usuário não cadastrado!");
+        UsuarioEntity usuarioRecuperado = findByLogin(login)
+                .orElseThrow(() -> new RegraDeNegocioException("Usuário não cadastrado!"));
 
+        usuarioRecuperado.setCargos(new HashSet<>());
 
-        usuarioRepository.save(usuarioRecuperado.get());
+        usuarioRepository.save(usuarioRecuperado);
     }
 
     public void atualizarUsuario(String login, UserAtualizacaoDTO userAtualizacaoDTO) throws RegraDeNegocioException {
@@ -100,19 +99,15 @@ public class UsuarioService {
         String loginAtualizado = userAtualizacaoDTO.getLogin();
         String cargo = userAtualizacaoDTO.getCargo().toString();
 
-        Optional<UsuarioEntity> usuarioRecuperado = findByLogin(login);
-        if (usuarioRecuperado.isEmpty()) throw new RegraDeNegocioException("Usuário não cadastrado!");
-        Optional<CargoEntity> cargoRecuperado = cargoRepository.findByNome(cargo);
-        if (cargoRecuperado.isEmpty()) throw new RegraDeNegocioException("Cargo não cadastrado!");
+        UsuarioEntity usuarioRecuperado = findByLogin(login).orElseThrow(() -> new RegraDeNegocioException("Usuário não cadastrado!"));
 
-        if (userAtualizacaoDTO.getLogin() != null) usuarioRecuperado.get().setLogin(loginAtualizado);
-        if (userAtualizacaoDTO.getCargo() != null) usuarioRecuperado.get().getCargos().add(cargoRecuperado.get());
+        CargoEntity cargoRecuperado = cargoRepository.findByNome(cargo).orElseThrow(() -> new RegraDeNegocioException("Cargo não cadastrado!"));
 
-        usuarioRepository.save(usuarioRecuperado.get());
+        if (userAtualizacaoDTO.getLogin() != null) usuarioRecuperado.setLogin(loginAtualizado);
+        if (userAtualizacaoDTO.getCargo() != null) usuarioRecuperado.getCargos().add(cargoRecuperado);
+
+        usuarioRepository.save(usuarioRecuperado);
 
     }
 
-    public String findByRole(Integer idUsuario){
-        return usuarioRepository.findByRole(idUsuario);
-    }
 }
