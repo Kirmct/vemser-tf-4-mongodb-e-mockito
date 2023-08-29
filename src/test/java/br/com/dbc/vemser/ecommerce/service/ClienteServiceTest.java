@@ -202,11 +202,11 @@ class ClienteServiceTest {
                 "11122233344"
         );
 
-        Page<ClientePaginadoDTO> clienteEntitiesPage = new PageImpl<>(List.of(clientePaginadoDTO));
+        Page<ClientePaginadoDTO> clienteDTOPage = new PageImpl<>(List.of(clientePaginadoDTO));
 
-        Pageable pageable = PageRequest.of(0, clienteEntitiesPage.getSize());
+        Pageable pageable = PageRequest.of(0, clienteDTOPage.getSize());
 
-        when(clienteRepository.buscarTodosClientesPaginados(pageable)).thenReturn(clienteEntitiesPage);
+        when(clienteRepository.buscarTodosClientesPaginados(pageable)).thenReturn(clienteDTOPage);
 
         Page<ClientePaginadoDTO> clientePaginadoDTORetornado = clienteService.clientePaginado(pageable);
         ClientePaginadoDTO clienteCobaiaTeste = clientePaginadoDTORetornado.getContent().get(0);
