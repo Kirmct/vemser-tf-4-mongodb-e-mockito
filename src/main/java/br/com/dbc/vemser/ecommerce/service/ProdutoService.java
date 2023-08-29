@@ -73,35 +73,6 @@ public class ProdutoService {
     }
 
     public ProdutoDTO salvar(ProdutoCreateDTO produtoCreateDTO) throws RegraDeNegocioException {
-        if (produtoCreateDTO == null) {
-            addLog("Tentou criar um produto invalido.");
-            throw new RegraDeNegocioException("Dados do produto inválidos.");
-        }
-
-        if (produtoCreateDTO.getModelo() == null || produtoCreateDTO.getModelo().isEmpty()) {
-            addLog("Tentou criar um produto com modelo vazio.");
-            throw new RegraDeNegocioException("Modelo do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getTamanho() == null) {
-            addLog("Tentou criar um produto com Tamanho vazio.");
-            throw new RegraDeNegocioException("Tamanho do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getCor() == null || produtoCreateDTO.getCor().isEmpty()) {
-            addLog("Tentou criar um produto com Cor vazio.");
-            throw new RegraDeNegocioException("Cor do produto não pode estar vazia.");
-        }
-
-        if (produtoCreateDTO.getSetor() == null) {
-            addLog("Tentou criar um produto com Setor vazio.");
-            throw new RegraDeNegocioException("Setor do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getValor() == null || produtoCreateDTO.getValor() <= 0) {
-            addLog("Tentou criar um produto com Valor vazio.");
-            throw new RegraDeNegocioException("Valor do produto inválido.");
-        }
 
         ProdutoEntity produtoEntity = ConversorMapper.converter(produtoCreateDTO, ProdutoEntity.class);
         ProdutoEntity produtoEntitySalvo = produtoRepository.save(produtoEntity);
@@ -114,41 +85,6 @@ public class ProdutoService {
 
     public ProdutoDTO atualizar(Integer idProduto, ProdutoCreateDTO produtoCreateDTO) throws RegraDeNegocioException {
         ProdutoEntity buscarProdutoEntity = produtoRepository.findByIdProduto(idProduto);
-
-        if (buscarProdutoEntity == null) {
-            addLog("Tentou atualizar um produto não cadastrado.");
-            throw new RegraDeNegocioException("Produto não cadastrado!");
-        }
-
-        if (produtoCreateDTO == null) {
-            addLog("Tentou atualizar um produto invalido.");
-            throw new RegraDeNegocioException("Dados do produto inválidos.");
-        }
-
-        if (produtoCreateDTO.getModelo() == null || produtoCreateDTO.getModelo().isEmpty()) {
-            addLog("Tentou criar um produto com modelo vazio.");
-            throw new RegraDeNegocioException("Modelo do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getTamanho() == null) {
-            addLog("Tentou criar um produto com Tamanho vazio.");
-            throw new RegraDeNegocioException("Tamanho do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getCor() == null || produtoCreateDTO.getCor().isEmpty()) {
-            addLog("Tentou criar um produto com Cor vazio.");
-            throw new RegraDeNegocioException("Cor do produto não pode estar vazia.");
-        }
-
-        if (produtoCreateDTO.getSetor() == null) {
-            addLog("Tentou criar um produto com Setor vazio.");
-            throw new RegraDeNegocioException("Setor do produto não pode estar vazio.");
-        }
-
-        if (produtoCreateDTO.getValor() == null || produtoCreateDTO.getValor() <= 0) {
-            addLog("Tentou criar um produto com Valor vazio.");
-            throw new RegraDeNegocioException("Valor do produto inválido.");
-        }
 
         ProdutoEntity produtoEntity = ConversorMapper.converter(produtoCreateDTO, ProdutoEntity.class);
 
